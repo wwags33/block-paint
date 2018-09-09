@@ -1,0 +1,41 @@
+{
+  "name": "block-paint",
+  "version": "1.0.0",
+  "description": "Simple, just point and paint.",
+  "private": "true",
+  "scripts": {
+    "build": "webpack",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wwags33/block-paint.git"
+  },
+  "keywords": [
+    "canvas",
+    "paint"
+  ],
+  "author": {
+    "name": "William Wager",
+    "email": "wwags33@gmail.com",
+    "url": "http://williamwager.com"
+  },
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/wwags33/block-paint/issues"
+  },
+  "homepage": "https://github.com/wwags33/block-paint#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "babel-loader": "^8.0.2",
+    "eslint": "^5.5.0",
+    "eslint-config-google": "^0.10.0",
+    "jest": "^23.5.0",
+    "webpack": "^4.17.2"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.0.0"
+  }
+}
