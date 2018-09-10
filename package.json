@@ -29,13 +29,21 @@
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
     "babel-loader": "^8.0.2",
+    "babel-preset-airbnb": "^2.6.0",
     "eslint": "^5.5.0",
+    "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-google": "^0.10.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^21.22.0",
     "jest": "^23.5.0",
+    "regenerator-runtime": "^0.12.1",
     "webpack": "^4.17.2"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.0.0"
+    "@babel/polyfill": "^7.0.0",
+    "airbnb-browser-shims": "^3.0.0"
   }
 }

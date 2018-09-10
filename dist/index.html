@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Block Paint</title>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Paint block by block." />
+    <meta name="keywords" content="HTML,CSS,JavaScript,Canvas">
+    <meta name="author" content="William Wager">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style/style.css">
+    <script src="./main.js"></script>
+  </head>
+  <body>
+    <header>
+      <div id="header_div" class="header_footer_div">
+        <!-- Logo will be replaced with image.
+        <img id="header_logo" src="images/logo.png" alt="Block Paint" height="50">-->
+        <a id="header_logo" class="header_footer_a" href="javascript:void(0);" title="Logo">Block Paint!</a>
+        <!-- Settings emblem will be replaced.
+        <img id="header_menu" src="images/settings_cog.png" alt="Settings" height="25">-->
+        <a id="header_menu" class="header_footer_a" href="javascript:void(0);" onclick="console.log('Open Settings...');" title="Settings">&#9788;</a>
+      </div>
+    </header>
+    <main>
+      <div id="main_div">
+        <p id="js_disabled_p">JavaScript must be enabled to run this application.</p>
+      </div>
+      <script>
+      document.getElementById("js_disabled_p").innerHTML="Loading Block Paint...";
+      </script>
+    </main>
+    <footer>
+      <div id="footer_div" class="header_footer_div">
+        <a id="footer_copyright" class="header_footer_a" href="javascript:void(0);" title="Copyright">William Wager &copy; 2018</a>
+      </div>
+    </footer>
+  </body>
+</html>

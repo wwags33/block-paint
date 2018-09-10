@@ -1,9 +1,9 @@
 const presets = [
-  ["@babel/env", {
+  ['@babel/env', {
     targets: {
-      "browsers": ["last 3 versions", "> 5% in US"]
+      browsers: ['last 3 versions', '> 5% in US']
     },
-    useBuiltIns: "usage"
+    useBuiltIns: 'usage'
   }]
 ];
 

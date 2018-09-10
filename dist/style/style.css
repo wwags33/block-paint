@@ -1,0 +1,56 @@
+/** 
+ * Copyright 2018 William Wager
+ */
+
+#js_disabled_p {
+  text-align: center;
+}
+
+body{
+  margin: 0px;
+}
+
+.header_footer_div {
+  background-color: rgba(200, 200, 200, 0.3);
+  height: 40px;
+  width: 100%;
+}
+
+.header_footer_a {
+  font: sans-serif;
+  color: #1F1F1F;
+  padding: 10px;
+  font-size: 20px;
+  line-height: 20px;
+  text-decoration: none;
+}
+
+#header_div{
+  box-shadow: 0 2px 8px #888888;
+}
+
+#header_logo{
+  float: left;
+}
+
+#header_menu{
+  float: right;
+  font-weight: bold;
+}
+
+#footer_div{
+  position: fixed;
+  bottom: 0;
+  box-shadow: 0 -2px 8px #888888;
+}
+
+#footer_copyright{
+  display: block;
+  text-align: center;
+}
+
+#main_div{
+  width: 100%;
+  overflow: auto;
+}
+
