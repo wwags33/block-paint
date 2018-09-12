@@ -1,10 +1,13 @@
 const presets = [
   ['@babel/env', {
-    targets: {
-      browsers: ['last 3 versions', '> 5% in US']
-    },
     useBuiltIns: 'usage'
   }]
 ];
 
-module.exports = { presets };
+const env = {
+  production: {
+    presets: ['minify']
+  }
+};
+
+module.exports = { presets, env };

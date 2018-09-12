@@ -18,9 +18,6 @@
  */
 
 import CanvasType from '../core';
-// const core = require('../core.js'); // Change to new import.
-
-console.log(CanvasType);
 
 describe('CanvasType object tests', () => {
   test('CanvasType can be OFFSCREEN', () => {
@@ -38,8 +35,7 @@ describe('CanvasType object tests', () => {
   });
 
   test('CanvasType cannot add OTHER', () => {
-    CanvasType.OTHER = 2;
-    expect(CanvasType.OTHER).toBeUndefined();
+    expect(() => CanvasType.OTHER = 2).toThrow(TypeError);
   });
 });
 

@@ -1,5 +1,5 @@
 module.exports = {
-  "extends": ["airbnb-base", "plugin:jest/recommended"],
+  "extends": ["airbnb-base", "plugin:jest/recommended", "plugin:compat/recommended"],
   "parserOptions": {
     "ecmaVersion": 6
   },
@@ -8,8 +8,7 @@ module.exports = {
     "es6": true,
     "jest": true
   },
-  "plugins": ["jest"],
   "rules": {
-    "comma-dangle": ["error", "never"]
+    "comma-dangle": ["error", "never"],
   }
 };
