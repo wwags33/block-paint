@@ -22,4 +22,6 @@ const CanvasType = Object.freeze({
   ONSCREEN: 1
 });
 
-module.exports = CanvasType;
+class Canvas {}
+
+module.exports = { CanvasType, Canvas };

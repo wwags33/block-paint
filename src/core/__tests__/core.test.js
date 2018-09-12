@@ -17,7 +17,7 @@
  *    along with Block Paint.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import CanvasType from '../core';
+import { CanvasType, Canvas } from '../core';
 
 describe('CanvasType object tests', () => {
   test('CanvasType can be OFFSCREEN', () => {
@@ -35,38 +35,53 @@ describe('CanvasType object tests', () => {
   });
 
   test('CanvasType cannot add OTHER', () => {
-    expect(() => CanvasType.OTHER = 2).toThrow(TypeError);
+    expect(() => {
+      CanvasType.OTHER = 2;
+      return CanvasType.OTHER;
+    }).toThrow(TypeError);
   });
 });
 
-/*
+
 describe('Canvas object tests', () => {
-  DOM fragment for canvas tests.
-  const fragment = document.createElement('body');
-  fragment.innerHTML = '<div id="main_div"><p>DOM fragment</p></div>';
-
-  //Object contructor tests
-  //class defined
-  //constructor args work
-  test('should create a canvans object', () => {
-    expect(new Canvas()).not.toBeNull();
-  });
-
-  //render creates a canvas element on the dom
-  test('should render a canvas element on #main_div', () => {
+  test('should create a canvans object with defaults', () => {
     const canvas = new Canvas();
-    canvas.render({context: fragment});
-    expect(fragment).toBe('<div id="main_div">canvas/div>')
+    expect(canvas.type).toBe(CanvasType.OFFSCREEN);
+    expect(canvas.width).toBe(window.innerWidth);
+    expect(canvas.height).toBe(window.innerHeight);
   });
 
-  //resize event resizes the canvas
+  test('should create a canvas object with provided values', () => {
+    const canvas = new Canvas(CanvasType.ONSCREEN, 500, 200);
+    expect(canvas.type).toBe(CanvasType.ONSCREEN);
+    expect(canvas.width).toBe(500);
+    expect(canvas.height).toBe(200);
+  });
+
+  test('should not render an OFFSCREEN canvas', () => {
+    const fragment = document.createElement('body');
+    fragment.innerHTML = '<div id="main_div"><p>DOM fragment</p></div>';
+
+    const canvas = new Canvas();
+    canvas.render({ context: fragment });
+    expect(document.getElementByTagName('canvas')).toBeNull();
+  });
+
+  test('should render a canvas element with default dimensions on #main_div', () => {
+    const fragment = document.createElement('body');
+    fragment.innerHTML = '<div id="main_div"><p>DOM fragment</p></div>';
+
+    const canvas = new Canvas(CanvasType.ONSCREEN);
+    canvas.render({ context: fragment });
+    expect(document.getElementByTagName('canvas')).not.toBeNull();
+  });
+
+/*  //resize event resizes the canvas
 
   //grid class defined
 
   //grid constructor works
 
   //resize event resizes grid
-
-
-});
 */
+});
