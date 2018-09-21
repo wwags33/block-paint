@@ -22,6 +22,22 @@ const CanvasType = Object.freeze({
   ONSCREEN: 1
 });
 
-class Canvas {}
+class Canvas {
+  constructor(type = CanvasType.OFFSCREEN, width = 0, height = 0) {
+    this.type = type;
+
+    if (width === 0 && window.innerWidth) {
+      this.width = window.innerWidth;
+    } else {
+      this.width = width;
+    }
+
+    if (height === 0 && window.innerHeight) {
+      this.height = window.innerHeight;
+    } else {
+      this.height = height;
+    }
+  }
+}
 
 module.exports = { CanvasType, Canvas };

@@ -51,6 +51,27 @@ describe('Canvas object tests', () => {
     expect(canvas.height).toBe(window.innerHeight);
   });
 
+  test('should create a 0x0 canvas object when there is no window', () => {
+    // Remove window properties.
+    window.innerWidth = undefined;
+    try {
+      delete window.innerWidth;
+    } catch (e) {
+      // Ignore any error.
+    }
+    window.innerHeight = undefined;
+    try {
+      delete window.innerHeight;
+    } catch (e) {
+      // Ignore any error.
+    }
+
+    const canvas = new Canvas();
+    expect(canvas.type).toBe(CanvasType.OFFSCREEN);
+    expect(canvas.width).toBe(0);
+    expect(canvas.height).toBe(0);
+  });
+
   test('should create a canvas object with provided values', () => {
     const canvas = new Canvas(CanvasType.ONSCREEN, 500, 200);
     expect(canvas.type).toBe(CanvasType.ONSCREEN);
@@ -67,14 +88,16 @@ describe('Canvas object tests', () => {
     expect(document.getElementByTagName('canvas')).toBeNull();
   });
 
-  test('should render a canvas element with default dimensions on #main_div', () => {
-    const fragment = document.createElement('body');
-    fragment.innerHTML = '<div id="main_div"><p>DOM fragment</p></div>';
+  test('should render a canvas element with default dimensions on #main_div', (
+    () => {
+      const fragment = document.createElement('body');
+      fragment.innerHTML = '<div id="main_div"><p>DOM fragment</p></div>';
 
-    const canvas = new Canvas(CanvasType.ONSCREEN);
-    canvas.render({ context: fragment });
-    expect(document.getElementByTagName('canvas')).not.toBeNull();
-  });
+      const canvas = new Canvas(CanvasType.ONSCREEN);
+      canvas.render({ context: fragment });
+      expect(document.getElementByTagName('canvas')).not.toBeNull();
+    }
+  ));
 
 /*  //resize event resizes the canvas
 
