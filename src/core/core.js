@@ -17,22 +17,24 @@
  *    along with Block Paint.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 const CanvasType = Object.freeze({
   OFFSCREEN: 0,
   ONSCREEN: 1
 });
 
 class Canvas {
-  constructor(type = CanvasType.OFFSCREEN, width = 0, height = 0) {
+  // Dependency on global window object.
+  constructor(domId, type = CanvasType.OFFSCREEN, width = 0, height = 0) {
     this.type = type;
 
-    if (width === 0 && window.innerWidth) {
+    if (width === 0) {
       this.width = window.innerWidth;
     } else {
       this.width = width;
     }
 
-    if (height === 0 && window.innerHeight) {
+    if (height === 0) {
       this.height = window.innerHeight;
     } else {
       this.height = height;
