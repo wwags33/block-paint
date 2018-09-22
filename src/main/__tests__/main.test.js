@@ -51,7 +51,6 @@ describe('CanvasType object tests', () => {
   });
 });
 
-
 describe('Canvas object tests', () => {
   test('should create a canvans object with defaults', () => {
     const canvas = new Canvas();
@@ -76,7 +75,9 @@ describe('Canvas object tests', () => {
     expect(canvas.width).toBe(500);
     expect(canvas.height).toBe(200);
   });
+});
 
+describe('Canvas render tests', () => {
   test('should render a canvas element on #main_div', (
     () => {
       document.body.innerHTML = '<div id="main_div"><p>DOM fragment</p></div>';
@@ -113,12 +114,13 @@ describe('Canvas object tests', () => {
     expect(document.getElementById('canvas_id')).toBeNull();
   });
 
-/*  //resize event resizes the canvas
+  // resize event resizes the canvas
+});
 
-  //grid class defined
+describe('Grid object tests', () => {
+  // grid class defined
 
-  //grid constructor works
+  // grid constructor works
 
-  //resize event resizes grid
-*/
+  // resize event resizes grid
 });

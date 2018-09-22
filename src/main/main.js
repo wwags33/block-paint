@@ -17,8 +17,6 @@
  *    along with Block Paint.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'airbnb-browser-shims';
-
 const CanvasType = Object.freeze({
   OFFSCREEN: 0,
   ONSCREEN: 1,
@@ -73,12 +71,5 @@ class Canvas {
     }
   }
 }
-
-// For testing purposes.
-window.onload = () => {
-  document.getElementById('js_disabled_p').remove();
-  const canvas = new Canvas('main_canvas', CanvasType.ONSCREEN);
-  canvas.render();
-};
 
 export { CanvasType, Canvas };
