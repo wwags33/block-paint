@@ -54,3 +54,7 @@ body{
   overflow: auto;
 }
 
+canvas{
+  background-color: tomato;
+}
+

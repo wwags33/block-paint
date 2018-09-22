@@ -42,7 +42,8 @@
     "eslint-plugin-jest": "^21.22.0",
     "jest": "^23.5.0",
     "regenerator-runtime": "^0.12.1",
-    "webpack": "^4.17.2"
+    "webpack": "^4.17.2",
+    "webpack-command": "^0.4.1"
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0",

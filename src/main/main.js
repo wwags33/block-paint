@@ -17,15 +17,33 @@
  *    along with Block Paint.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'airbnb-browser-shims';
 
 const CanvasType = Object.freeze({
   OFFSCREEN: 0,
-  ONSCREEN: 1
+  ONSCREEN: 1,
+  toText: function canvasTypeToText(type) {
+    switch (type) {
+      case CanvasType.OFFSCREEN:
+        return 'offscreen';
+      case CanvasType.ONSCREEN:
+        return 'onscreen';
+      default:
+        throw new Error('Not a canvas type!');
+    }
+  }
 });
 
 class Canvas {
   // Dependency on global window object.
   constructor(domId, type = CanvasType.OFFSCREEN, width = 0, height = 0) {
+    if (!domId) {
+      // Will throw error if type is invalid.
+      this.domId = `${CanvasType.toText(type)}_canvas`;
+    } else {
+      this.domId = String(domId);
+    }
+
     this.type = type;
 
     if (width === 0) {
@@ -38,6 +56,20 @@ class Canvas {
       this.height = window.innerHeight;
     } else {
       this.height = height;
+    }
+
+    this.domNode = null;
+  }
+
+  // Depends on document.
+  // Onscreen depends on dom element with id 'main_div'
+  render() {
+    this.domNode = document.createElement('CANVAS');
+    this.domNode.id = this.domId;
+    this.domNode.width = this.width;
+    this.domNode.height = this.height;
+    if (this.type === CanvasType.ONSCREEN) {
+      document.getElementById('main_div').appendChild(this.domNode);
     }
   }
 }

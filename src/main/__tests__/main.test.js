@@ -17,28 +17,37 @@
  *    along with Block Paint.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { CanvasType, Canvas } from '../core';
+import { CanvasType, Canvas } from '../main';
 
 describe('CanvasType object tests', () => {
-  test('CanvasType can be OFFSCREEN', () => {
+  test('CanvasType should be OFFSCREEN', () => {
     expect(CanvasType.OFFSCREEN).toBeDefined();
     expect(CanvasType.OFFSCREEN).toBe(0);
   });
 
-  test('CanvasType can be ONSCREEN', () => {
+  test('CanvasType should be ONSCREEN', () => {
     expect(CanvasType.ONSCREEN).toBeDefined();
     expect(CanvasType.ONSCREEN).toBe(1);
   });
 
-  test('CanvasType cannot be OTHER', () => {
+  test('CanvasType should not be OTHER', () => {
     expect(CanvasType.OTHER).toBeUndefined();
   });
 
-  test('CanvasType cannot add OTHER', () => {
+  test('CanvasType should not add OTHER', () => {
     expect(() => {
       CanvasType.OTHER = 2;
       return CanvasType.OTHER;
     }).toThrow(TypeError);
+  });
+
+  test('CanvasType.toText should return type as a string', () => {
+    expect(CanvasType.toText(CanvasType.OFFSCREEN)).toBe('offscreen');
+    expect(CanvasType.toText(CanvasType.ONSCREEN)).toBe('onscreen');
+  });
+
+  test('CanvasType.toText should throw an error on invalid input', () => {
+    expect(() => CanvasType.toText('input')).toThrow(Error);
   });
 });
 
@@ -74,8 +83,8 @@ describe('Canvas object tests', () => {
 
       const canvas = new Canvas('canvas_id', CanvasType.ONSCREEN);
       canvas.render();
-      expect(canvas.domNode).toBe(expect.anything()); // Not null or undefined.
-      expect(document.getElementsByTagName('canvas').length).toBeGreaterThan(0);
+      expect(canvas.domNode).not.toBeNull();
+      expect(document.getElementsByTagName('canvas')).toHaveLength(1);
       expect(document.getElementById('canvas_id')).not.toBeNull();
     }));
 
@@ -85,12 +94,12 @@ describe('Canvas object tests', () => {
 
       const canvas = new Canvas('canvas_id', CanvasType.ONSCREEN, 200, 100);
       canvas.render();
-      expect(canvas.domNode).toBe(expect.anything()); // Not null or undefined.
-      expect(document.getElementsByTagName('canvas').length).toBeGreaterThan(0);
+      expect(canvas.domNode).not.toBeNull();
+      expect(document.getElementsByTagName('canvas')).toHaveLength(1);
       expect(document.getElementById('canvas_id')).not.toBeNull();
-      expect(document.getElementById('canvas_id').getParentNode().innerHTML)
+      expect(document.getElementById('canvas_id').parentNode.innerHTML)
         .toMatch(/width="200"/);
-      expect(document.getElementById('canvas_id').getParentNode().innerHTML)
+      expect(document.getElementById('canvas_id').parentNode.innerHTML)
         .toMatch(/height="100"/);
     }));
 
@@ -99,7 +108,7 @@ describe('Canvas object tests', () => {
 
     const canvas = new Canvas('canvas_id', CanvasType.OFFSCREEN);
     canvas.render();
-    expect(canvas.domNode).toBe(expect.anything()); // Not null or undefined.
+    expect(canvas.domNode).not.toBeNull();
     expect(document.getElementsByTagName('canvas')).toHaveLength(0);
     expect(document.getElementById('canvas_id')).toBeNull();
   });
