@@ -11,7 +11,8 @@ body{
 }
 
 .header_footer_div {
-  background-color: rgba(200, 200, 200, 0.3);
+  position: fixed;
+  background-color: rgba(200, 200, 200, 0.8);
   height: 40px;
   width: 100%;
 }
@@ -39,7 +40,6 @@ body{
 }
 
 #footer_div{
-  position: fixed;
   bottom: 0;
   box-shadow: 0 -2px 8px #888888;
 }
@@ -49,12 +49,9 @@ body{
   text-align: center;
 }
 
-#main_div{
-  width: 100%;
-  overflow: auto;
-}
-
 canvas{
-  background-color: tomato;
+  position: absolute;
+  background-color: white;
+  z-index: -1;
 }
 

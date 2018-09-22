@@ -74,4 +74,11 @@ class Canvas {
   }
 }
 
-module.exports = { CanvasType, Canvas };
+// For testing purposes.
+window.onload = () => {
+  document.getElementById('js_disabled_p').remove();
+  const canvas = new Canvas('main_canvas', CanvasType.ONSCREEN);
+  canvas.render();
+};
+
+export { CanvasType, Canvas };

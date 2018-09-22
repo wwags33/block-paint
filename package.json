@@ -4,8 +4,9 @@
   "description": "Simple, just point and paint.",
   "private": "true",
   "scripts": {
-    "build": "webpack",
-    "test": "jest"
+    "lint": "eslint .",
+    "test": "jest",
+    "build": "wp --mode production"
   },
   "repository": {
     "type": "git",
