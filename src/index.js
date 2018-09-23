@@ -18,12 +18,15 @@
  */
 
 import 'airbnb-browser-shims';
-import { CanvasType, Canvas } from './main/main';
+// import { App } from './main/main';
 
 function main() {
-  document.getElementById('js_disabled_p').remove();
-  const canvas = new Canvas('main_canvas', CanvasType.ONSCREEN);
-  canvas.render();
+  // document.getElementById('js_disabled_p').remove();
+  // App.init();
+  // App.draw();
+  // window.addEventListener('resize', App.resize.bind(App));
+  // document.getElementById('header_menu').addEventListener('click', App.settings);
+  // document.getElementById('footer_copyright').addEventListener('click', App.website);
 }
 
-window.onload = main;
+window.addEventListener('load', main);

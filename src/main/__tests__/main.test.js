@@ -17,110 +17,133 @@
  *    along with Block Paint.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { CanvasType, Canvas } from '../main';
+import { LineOrientation, Line, Block } from '../main';
 
-describe('CanvasType object tests', () => {
-  test('CanvasType should be OFFSCREEN', () => {
-    expect(CanvasType.OFFSCREEN).toBeDefined();
-    expect(CanvasType.OFFSCREEN).toBe(0);
+describe('LineOrientation oject tests', () => {
+  test('should have VERTICAL', () => {
+    expect(LineOrientation.VERTICAL).toBeDefined();
   });
 
-  test('CanvasType should be ONSCREEN', () => {
-    expect(CanvasType.ONSCREEN).toBeDefined();
-    expect(CanvasType.ONSCREEN).toBe(1);
+  test('should have HORIZONTAL', () => {
+    expect(LineOrientation.HORIZONTAL).toBeDefined();
   });
 
-  test('CanvasType should not be OTHER', () => {
-    expect(CanvasType.OTHER).toBeUndefined();
-  });
-
-  test('CanvasType should not add OTHER', () => {
+  test('should not add OTHER', () => {
+    expect(LineOrientation.OTHER).toBeUndefined();
     expect(() => {
-      CanvasType.OTHER = 2;
-      return CanvasType.OTHER;
+      LineOrientation.OTHER = 3;
     }).toThrow(TypeError);
   });
 
-  test('CanvasType.toText should return type as a string', () => {
-    expect(CanvasType.toText(CanvasType.OFFSCREEN)).toBe('offscreen');
-    expect(CanvasType.toText(CanvasType.ONSCREEN)).toBe('onscreen');
+  test('should say true when is LineOrientation', () => {
+    expect(LineOrientation.isLineOrientation(LineOrientation.VERTICAL)).toBe(true);
   });
 
-  test('CanvasType.toText should throw an error on invalid input', () => {
-    expect(() => CanvasType.toText('input')).toThrow(Error);
-  });
-});
-
-describe('Canvas object tests', () => {
-  test('should create a canvans object with defaults', () => {
-    const canvas = new Canvas();
-    expect(canvas.domId).toBe('offscreen_canvas');
-    expect(canvas.type).toBe(CanvasType.OFFSCREEN);
-    expect(canvas.width).toBe(window.innerWidth);
-    expect(canvas.height).toBe(window.innerHeight);
-  });
-
-  test('should create a canvans object with domId containing type', () => {
-    const canvas = new Canvas(null, CanvasType.ONSCREEN);
-    expect(canvas.domId).toBe('onscreen_canvas');
-    expect(canvas.type).toBe(CanvasType.ONSCREEN);
-    expect(canvas.width).toBe(window.innerWidth);
-    expect(canvas.height).toBe(window.innerHeight);
-  });
-
-  test('should create a canvas object with provided values', () => {
-    const canvas = new Canvas('canvas_id', CanvasType.ONSCREEN, 500, 200);
-    expect(canvas.domId).toBe('canvas_id');
-    expect(canvas.type).toBe(CanvasType.ONSCREEN);
-    expect(canvas.width).toBe(500);
-    expect(canvas.height).toBe(200);
+  test('should say false when not LineOrientation', () => {
+    expect(LineOrientation.isLineOrientation('Will')).toBe(false);
   });
 });
 
-describe('Canvas render tests', () => {
-  test('should render a canvas element on #main_div', (
-    () => {
-      document.body.innerHTML = '<div id="main_div"><p>DOM fragment</p></div>';
-
-      const canvas = new Canvas('canvas_id', CanvasType.ONSCREEN);
-      canvas.render();
-      expect(canvas.domNode).not.toBeNull();
-      expect(document.getElementsByTagName('canvas')).toHaveLength(1);
-      expect(document.getElementById('canvas_id')).not.toBeNull();
-    }));
-
-  test('should render a canvas element with custom dimensions on #main_div', (
-    () => {
-      document.body.innerHTML = '<div id="main_div"><p>DOM fragment</p></div>';
-
-      const canvas = new Canvas('canvas_id', CanvasType.ONSCREEN, 200, 100);
-      canvas.render();
-      expect(canvas.domNode).not.toBeNull();
-      expect(document.getElementsByTagName('canvas')).toHaveLength(1);
-      expect(document.getElementById('canvas_id')).not.toBeNull();
-      expect(document.getElementById('canvas_id').parentNode.innerHTML)
-        .toMatch(/width="200"/);
-      expect(document.getElementById('canvas_id').parentNode.innerHTML)
-        .toMatch(/height="100"/);
-    }));
-
-  test('should create dom node, but not attach it', () => {
-    document.body.innerHTML = '<div id="main_div"><p>DOM fragment</p></div>';
-
-    const canvas = new Canvas('canvas_id', CanvasType.OFFSCREEN);
-    canvas.render();
-    expect(canvas.domNode).not.toBeNull();
-    expect(document.getElementsByTagName('canvas')).toHaveLength(0);
-    expect(document.getElementById('canvas_id')).toBeNull();
+describe('Line class tests', () => {
+  test('should create a line object', () => {
+    const line = new Line(LineOrientation.VERTICAL, 5);
+    expect(line instanceof Line).toBe(true);
+    expect(line.orientation).toBe(LineOrientation.VERTICAL);
+    expect(line.linePosition).toBe(5);
   });
 
-  // resize event resizes the canvas
+  test('should throw TypeErrors for bad input', () => {
+    expect(() => new Line(LineOrientation.DIAGONAL, 10)).toThrow(TypeError);
+    expect(() => new Line(LineOrientation.HORIZONTAL, 'Tom')).toThrow(TypeError);
+  });
+
+  test('should draw vertical line on canvas', () => {
+    const controlCanvas = document.createElement('CANVAS');
+    controlCanvas.width = 20;
+    controlCanvas.height = 20;
+    const controlCtx = controlCanvas.getContext('2d');
+    controlCtx.beginPath();
+    controlCtx.moveTo(10, 0);
+    controlCtx.lineTo(10, 20);
+    controlCtx.stroke();
+
+    const canvas = document.createElement('CANVAS');
+    canvas.width = 20;
+    canvas.height = 20;
+    const ctx = canvas.getContext('2d');
+    const line = new Line(LineOrientation.VERTICAL, 10);
+    line.render(canvas, ctx);
+
+    expect(canvas.toDataURL()).toBe(controlCanvas.toDataURL());
+  });
+
+  test('should draw horizontal line on canvas', () => {
+    const controlCanvas = document.createElement('CANVAS');
+    controlCanvas.width = 20;
+    controlCanvas.height = 20;
+    const controlCtx = controlCanvas.getContext('2d');
+    controlCtx.beginPath();
+    controlCtx.moveTo(0, 10);
+    controlCtx.lineTo(20, 10);
+    controlCtx.stroke();
+
+    const canvas = document.createElement('CANVAS');
+    canvas.width = 20;
+    canvas.height = 20;
+    const ctx = canvas.getContext('2d');
+    const line = new Line(LineOrientation.HORIZONTAL, 10);
+    line.render(canvas, ctx);
+
+    expect(canvas.toDataURL()).toBe(controlCanvas.toDataURL());
+  });
 });
 
-describe('Grid object tests', () => {
-  // grid class defined
+describe('Block class tests', () => {
+  test('should create a bock object', () => {
+    const block = new Block(0, 0, 10);
+    expect(block instanceof Block).toBe(true);
+    expect(block.x).toBe(0);
+    expect(block.y).toBe(0);
+    expect(block.edgeLength).toBe(10);
+    expect(block.color).toBe('black');
+  });
 
-  // grid constructor works
+  test('should throw TypeErrors on bad input', () => {
+    expect(() => new Block('Deb', 0, 20)).toThrow(TypeError);
+    expect(() => new Block(0, true, 25)).toThrow(TypeError);
+    expect(() => new Block(5, 10, { length: 10 })).toThrow(TypeError);
+  });
 
-  // resize event resizes grid
+  test('should draw block on canvas', () => {
+    const controlCanvas = document.createElement('CANVAS');
+    controlCanvas.width = 100;
+    controlCanvas.height = 50;
+    const controlCtx = controlCanvas.getContext('2d');
+    controlCtx.fillStyle = 'tomato';
+    controlCtx.fillRect(10, 12, 15, 15);
+
+    const canvas = document.createElement('CANVAS');
+    canvas.width = 100;
+    canvas.height = 50;
+    const ctx = canvas.getContext('2d');
+    const block = new Block(10, 12, 15, 'tomato');
+    block.render(ctx);
+
+    expect(canvas.toDataURL()).toBe(controlCanvas.toDataURL());
+  });
+
+  test('should not draw block if edgeLength is 0', () => {
+    const controlCanvas = document.createElement('CANVAS');
+    controlCanvas.width = 200;
+    controlCanvas.height = 150;
+
+    const canvas = document.createElement('CANVAS');
+    canvas.width = 200;
+    canvas.height = 150;
+    const ctx = canvas.getContext('2d');
+    const block = new Block(10, 20, 0);
+    block.render(ctx);
+
+    expect(canvas.toDataURL()).toBe(controlCanvas.toDataURL());
+  });
 });
