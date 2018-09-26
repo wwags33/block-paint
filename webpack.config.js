@@ -3,10 +3,8 @@ const path = require('path');
 module.exports = {
   entry: './src/index.js',
   output: {
-    filename: 'block-paint.js',
-    path: path.resolve(__dirname, 'dist'),
-    libraryTarget: 'var',
-    library: 'BlockPaint'
+    filename: 'index.js',
+    path: path.resolve(__dirname, 'dist')
   },
   module: {
     rules: [{

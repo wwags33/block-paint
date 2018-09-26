@@ -17,16 +17,12 @@
  *    along with Block Paint.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'airbnb-browser-shims';
-// import BlockPaint from './main/blockPaint';
+export default class ColorPalette {
+  constructor() {
+    this.length = 1;
+  }
 
-function main() {
-  // document.getElementById('main_div').remove();
-  // App.init();
-  // App.draw();
-  // window.addEventListener('resize', App.resize.bind(App));
-  // document.getElementById('header_menu').addEventListener('click', App.settings);
-  // document.getElementById('footer_copyright').addEventListener('click', App.website);
+  getColor() {
+    return 'black';
+  }
 }
-
-window.addEventListener('load', main);
