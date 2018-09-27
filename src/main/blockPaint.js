@@ -64,8 +64,6 @@ class Grid {
 
   render(ctx, blockSize, canvasWidth, canvasHeight, offset = { x: 0, y: 0 }) {
     if (this.hide) return;
-    // Set width to 2 to decrease anti-aliasing effects.
-    ctx.lineWidth = 2;
     // Draw a poly-line for performance.
     ctx.beginPath();
     let numLines = Math.floor(canvasWidth / blockSize);
@@ -94,6 +92,36 @@ class AppCanvas {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
     this.colorPalette = new ColorPalette();
+    // Event Handlers.
+    this.resizeHandler = this.resize.bind(this);
+    this.zoomInHandler = this.zoomIn.bind(this);
+    this.zoomOutHandler = this.zoomOut.bind(this);
+
+    // Pan mechanism.
+    const boundPan = this.pan.bind(this);
+    const panHandlers = (function panClosure() {
+      let dragCheckpointX = 0;
+      let dragCheckpointY = 0;
+
+      function initialDragCheckpointSet() {
+        dragCheckpointX = this.clientX;
+        dragCheckpointY = this.clientY;
+      }
+
+      function panAndCheckpointSet() {
+        boundPan(this.clientX - dragCheckpointX, this.clientY - dragCheckpointY);
+        dragCheckpointX = this.clientX;
+        dragCheckpointY = this.clientY;
+      }
+
+      return {
+        startDrag: initialDragCheckpointSet,
+        continueDrag: panAndCheckpointSet
+      };
+    }());
+
+    this.canvas.ondragstart = panHandlers.startDrag;
+    this.canvas.ondrag = panHandlers.continueDrag;
   }
 
   toggleGrid() {
@@ -103,8 +131,9 @@ class AppCanvas {
   render() {
     const ctx = this.canvas.getContext('2d');
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    ctx.translate(0.5, 0.5);
     this.grid.render(ctx, this.blockSize, this.canvas.width, this.canvas.height, this.offset);
-    this.blocks.values().foreach(
+    Object.values(this.blocks).forEach(
       block => block.render(ctx, this.blockSize, this.colorPalette, this.offset)
     );
   }
@@ -115,22 +144,45 @@ class AppCanvas {
     this.render();
   }
 
-  // zoomIn() {
-  //   this.blockSize = Math.ceil(this.blockSize * 2);
-  //   this.grid.updateLines(this.blockSize, this.canvasElement.width, this.canvasElement.height);
-  //   this.render();
-  // }
+  // Bind to AppCanvas object in listener.
+  zoomIn() {
+    this.blockSize = Math.ceil(this.blockSize * 2);
+    this.render();
+  }
 
-  // zoomOut() {
-  //   this.blockSize = Math.ceil(this.blockSize / 2);
-  //   this.grid.updateLines(this.blockSize, this.canvasElement.width, this.canvasElement.height);
-  //   this.render();
-  // }
+  // Bind to AppCanvas object in listener.
+  zoomOut() {
+    this.blockSize = Math.ceil(this.blockSize / 2);
+    this.render();
+  }
 
-  // pan() {
-  //   // this.clientX clientY
-  // Don't forget the whole overflow mechanic here.
-  // }
+  pan(x, y) {
+    this.offset.x += x;
+    this.offset.y += y;
+    let moveX = 0;
+    let moveY = 0;
+    if (this.offset.x >= this.blockSize) {
+      moveX = 1;
+      this.offset.x %= this.blockSize;
+    } else if (this.offset.x <= (0 - this.blockSize)) {
+      moveX = -1;
+      this.offset.x %= this.blockSize;
+    }
+    if (this.offset.y >= this.blockSize) {
+      moveY = 1;
+      this.offset.y %= this.blockSize;
+    } else if (this.offset.y <= (0 - this.blockSize)) {
+      moveY = -1;
+      this.offset.y %= this.blockSize;
+    }
+    if (moveX !== 0 || moveY !== 0) {
+      Object.values(this.blocks).forEach((block) => {
+        block.blockX += moveX;
+        block.blockY += moveY;
+      });
+    }
+    this.render();
+  }
 
   // paintBlock(app) {
   //   const coordinateX = Math.floor(this.clientX / app.blockSize);
@@ -150,26 +202,26 @@ class AppCanvas {
   // }
 }
 
-export default class App {
-  // setListeners() {
-  //   window.addEventListener('resize', this.resize());
-  //   this.canvasElement.addEventListener('click', this.paintBlock());
-  //   this.canvasElement.addEventListener('drag', this.pan());
-  // }
+// export default class App {
+//   // setListeners() {
+//   //   window.addEventListener('resize', this.resize());
+//   //   this.canvasElement.addEventListener('click', this.paintBlock());
+//   //   this.canvasElement.addEventListener('drag', this.pan());
+//   // }
 
-  // save() {
-  //   const data = {
-  //     blockSize,
-  //     // colorPalette,
-  //     gridBlocks
-  //   };
-  //   return JSON.stringify(data);
-  // }
+//   // save() {
+//   //   const data = {
+//   //     blockSize,
+//   //     // colorPalette,
+//   //     gridBlocks
+//   //   };
+//   //   return JSON.stringify(data);
+//   // }
 
-  // load(data) {
-  //   // { blockSize, gridBlocks } = JSON.parse(data);
-  // }
-}
+//   // load(data) {
+//   //   // { blockSize, gridBlocks } = JSON.parse(data);
+//   // }
+// }
 
 export {
   Block,

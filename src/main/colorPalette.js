@@ -22,7 +22,7 @@ export default class ColorPalette {
     this.length = 1;
   }
 
-  getColor() {
+  static getColor() {
     return 'black';
   }
 }

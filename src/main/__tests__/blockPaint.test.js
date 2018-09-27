@@ -130,10 +130,9 @@ describe('Grid class tests', () => {
 
   test('should draw a grid on render', () => {
     const controlCanvas = document.createElement('CANVAS');
-    controlCanvas.width = 50;
+    controlCanvas.width = 100;
     controlCanvas.height = 50;
     const controlCtx = controlCanvas.getContext('2d');
-    controlCtx.lineWidth = 2;
     controlCtx.beginPath();
     controlCtx.moveTo(0, 0);
     controlCtx.lineTo(0, 50);
@@ -141,16 +140,20 @@ describe('Grid class tests', () => {
     controlCtx.lineTo(25, 50);
     controlCtx.moveTo(50, 0);
     controlCtx.lineTo(50, 50);
+    controlCtx.moveTo(75, 0);
+    controlCtx.lineTo(75, 50);
+    controlCtx.moveTo(100, 0);
+    controlCtx.lineTo(100, 50);
     controlCtx.moveTo(0, 0);
-    controlCtx.lineTo(50, 0);
+    controlCtx.lineTo(100, 0);
     controlCtx.moveTo(0, 25);
-    controlCtx.lineTo(50, 25);
+    controlCtx.lineTo(100, 25);
     controlCtx.moveTo(0, 50);
-    controlCtx.lineTo(50, 50);
+    controlCtx.lineTo(100, 50);
     controlCtx.stroke();
 
     const canvas = document.createElement('CANVAS');
-    canvas.width = 50;
+    canvas.width = 100;
     canvas.height = 50;
     const ctx = canvas.getContext('2d');
 
@@ -187,37 +190,88 @@ describe('AppCanvas class tests', () => {
   });
 
   test('should toggle the hide flag on its grid', () => {
-    throw Error('Not implemented!');
     const appCanvas = new AppCanvas();
-    // Spy Grid class...
+    // Mock function in grid class...
+    const hideGrid = jest.fn();
+    appCanvas.grid.toggleHide = hideGrid;
+
     appCanvas.toggleGrid();
-    // Expect Grid.toggleHide to be called.
+    expect(hideGrid).toBeCalled();
   });
 
   test('should clear the canvas and then render the grid followed by the blocks', () => {
-    throw Error('Not implemented!');
+    const controlCanvas = document.createElement('CANVAS');
+    controlCanvas.width = window.innerWidth;
+    controlCanvas.height = window.innerHeight;
+    const controlCtx = controlCanvas.getContext('2d');
+    controlCtx.translate(0.5, 0.5);
+
     const appCanvas = new AppCanvas(50);
-    // Add some blocks
-    // Spy grid and block renders. Grid.render once, block render times the number of blocks.
+
+    // Mock grid render.
+    const mockGridRender = jest.fn().mockName('mockGridRender');
+    appCanvas.grid.render = mockGridRender;
+
+    // Partially mocking some blocks.
+    const mockBlockRender = jest.fn().mockName('mockBlockRender');
+    let block;
+    for (let i = 0; i < 10; i += 1) {
+      for (let j = 0; j < 10; j += 1) {
+        block = new Block(i, j);
+        block.render = mockBlockRender;
+        appCanvas.blocks[`${block.toHashKey()}`] = block;
+      }
+    }
+
     appCanvas.render();
+    expect(appCanvas.canvas.toDataURL()).toBe(controlCanvas.toDataURL());
+    expect(mockGridRender).toBeCalled();
+    expect(mockBlockRender.mock.calls).toHaveLength(100);
   });
 
   test('should correctly resize and render the canvas', () => {
-    throw Error('Not implemented!');
-    // reset the size.
-    // verify the canvas size
-    // verify render was called (mock function)
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100);
+    appCanvas.render = mockAppCanvasRender;
+
+    expect(appCanvas.canvas.width).toBe(window.innerWidth);
+    expect(appCanvas.canvas.height).toBe(window.innerHeight);
+
+    window.innerWidth = 500;
+    window.innerHeight = 250;
+
+    appCanvas.resize();
+    expect(appCanvas.blockSize).toBe(100); // Should not change.
+    expect(appCanvas.canvas.width).toBe(500);
+    expect(appCanvas.canvas.height).toBe(250);
+    expect(mockAppCanvasRender).toBeCalled();
   });
 
   test('should zoom in by increasing the block size and re-rendering', () => {
-    throw Error('Not implemented!');
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100);
+    appCanvas.render = mockAppCanvasRender;
+
+    appCanvas.zoomIn();
+    expect(appCanvas.blockSize).toBeCloseTo(200);
+    expect(appCanvas.canvas.width).toBe(window.innerWidth); // Should not change.
+    expect(appCanvas.canvas.height).toBe(window.innerHeight); // Should not change.
+    expect(mockAppCanvasRender).toBeCalled();
   });
 
   test('should zoom out by decreasing the block size and re-rendering', () => {
-    throw Error('Not implemented!');
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100);
+    appCanvas.render = mockAppCanvasRender;
+
+    appCanvas.zoomOut();
+    expect(appCanvas.blockSize).toBeCloseTo(50);
+    expect(appCanvas.canvas.width).toBe(window.innerWidth); // Should not change.
+    expect(appCanvas.canvas.height).toBe(window.innerHeight); // Should not change.
+    expect(mockAppCanvasRender).toBeCalled();
   });
 
-  test('should pan the canvas left 13 pixels and up 4', () => {
+  test('should pan the canvas left 12.965 pixels and up 4.12', () => {
     throw Error('Not implemented!');
   });
 });
