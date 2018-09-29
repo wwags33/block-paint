@@ -34,7 +34,15 @@ class Block {
   }
 
   toHashKey() {
-    return `Block_${this.blockX}_${this.blockY}`;
+    let x = this.blockX;
+    let y = this.blockY;
+    if (x < 0) {
+      x = `n${Math.abs(x)}`;
+    }
+    if (y < 0) {
+      y = `n${Math.abs(y)}`;
+    }
+    return `Block_${x}_${y}`;
   }
 
   render(ctx, blockSize, colorPalette, offset = { x: 0, y: 0 }) {
@@ -50,7 +58,6 @@ class Block {
  * changes. All blocks with colorIndexes above the color palette size will be rolled over into the
  * new color palette. The user must be adequately informed of this before color palette changes are
  * pushed and they must be allowed to save their existing canvas to recover later.
- *
  */
 
 class Grid {
@@ -99,19 +106,19 @@ class AppCanvas {
 
     // Pan mechanism.
     const boundPan = this.pan.bind(this);
-    const panHandlers = (function panClosure() {
+    const panHandlers = (function panClosure() { // Closure to avoid using that/self.
       let dragCheckpointX = 0;
       let dragCheckpointY = 0;
 
-      function initialDragCheckpointSet() {
-        dragCheckpointX = this.clientX;
-        dragCheckpointY = this.clientY;
+      function initialDragCheckpointSet(event) {
+        dragCheckpointX = event.clientX;
+        dragCheckpointY = event.clientY;
       }
 
-      function panAndCheckpointSet() {
-        boundPan(this.clientX - dragCheckpointX, this.clientY - dragCheckpointY);
-        dragCheckpointX = this.clientX;
-        dragCheckpointY = this.clientY;
+      function panAndCheckpointSet(event) {
+        boundPan(event.clientX - dragCheckpointX, event.clientY - dragCheckpointY);
+        dragCheckpointX = event.clientX;
+        dragCheckpointY = event.clientY;
       }
 
       return {
@@ -176,10 +183,13 @@ class AppCanvas {
       this.offset.y %= this.blockSize;
     }
     if (moveX !== 0 || moveY !== 0) {
+      const newBlocks = {};
       Object.values(this.blocks).forEach((block) => {
         block.blockX += moveX;
         block.blockY += moveY;
+        newBlocks[`${block.toHashKey()}`] = block;
       });
+      this.blocks = newBlocks;
     }
     this.render();
   }

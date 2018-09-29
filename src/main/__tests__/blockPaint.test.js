@@ -22,6 +22,9 @@ import {
   Grid,
   AppCanvas
 } from '../blockPaint';
+import ColorPalette from '../colorPalette';
+
+jest.mock('../colorPalette');
 
 describe('Block class tests', () => {
   test('should create a Block object with defaults', () => {
@@ -45,6 +48,13 @@ describe('Block class tests', () => {
     expect(block.colorIndex).toBe(1);
   });
 
+  test('should create a block with negative coordinates', () => {
+    const block = new Block(-1, -1);
+    expect(block.blockX).toBe(-1);
+    expect(block.blockY).toBe(-1);
+    expect(block.toHashKey()).toBe('Block_n1_n1');
+  });
+
   test('should draw a block on the canvas', () => {
     const controlCanvas = document.createElement('CANVAS');
     controlCanvas.width = 500;
@@ -58,12 +68,7 @@ describe('Block class tests', () => {
     testCanvas.height = 250;
     const testCtx = testCanvas.getContext('2d');
 
-    const mockColorPalette = {
-      palette: ['black', 'tomato'],
-      getColor: function getColorAtIndex(i) {
-        return this.palette[i];
-      }
-    };
+    const mockColorPalette = new ColorPalette();
 
     const block = new Block(1, 2, 1);
     block.render(testCtx, 100, mockColorPalette);
@@ -84,14 +89,9 @@ describe('Block class tests', () => {
     testCanvas.height = 250;
     const testCtx = testCanvas.getContext('2d');
 
-    const mockColorPalette = {
-      palette: ['black', 'silver'],
-      getColor: function getColorAtIndex(i) {
-        return this.palette[i];
-      }
-    };
+    const mockColorPalette = new ColorPalette();
 
-    const block = new Block(1, 2);
+    const block = new Block(1, 2, 1);
     block.nextColor();
     block.render(testCtx, 100, mockColorPalette, { x: 20, y: 13 });
 
@@ -108,12 +108,7 @@ describe('Block class tests', () => {
     testCanvas.height = 250;
     const testCtx = testCanvas.getContext('2d');
 
-    const mockColorPalette = {
-      palette: ['black', 'tomato'],
-      getColor: function getColorAtIndex(i) {
-        return this.palette[i];
-      }
-    };
+    const mockColorPalette = new ColorPalette();
 
     const block = new Block(7, 2);
     block.render(testCtx, 100, mockColorPalette);
@@ -271,7 +266,154 @@ describe('AppCanvas class tests', () => {
     expect(mockAppCanvasRender).toBeCalled();
   });
 
-  test('should pan the canvas left 12.965 pixels and up 4.12', () => {
-    throw Error('Not implemented!');
+  test('should pan the canvas right 12.965 pixels and down 4.12', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100, { x: -2.3, y: -1.111 });
+    appCanvas.render = mockAppCanvasRender;
+
+    appCanvas.pan(15.265, 5.231);
+    expect(appCanvas.offset.x).toBeCloseTo(12.965);
+    expect(appCanvas.offset.y).toBeCloseTo(4.12);
+    expect(mockAppCanvasRender).toBeCalled();
+  });
+
+  test('should shift all blocks to the right 1', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(20);
+    appCanvas.render = mockAppCanvasRender;
+    let block;
+    for (let i = 0; i < 2; i += 1) {
+      for (let j = 0; j < 2; j += 1) {
+        block = new Block(i, j);
+        appCanvas.blocks[`${block.toHashKey()}`] = block;
+      }
+    }
+
+    appCanvas.pan(20, 0);
+    expect(appCanvas.offset.x).toBeCloseTo(0);
+    expect(appCanvas.offset.y).toBeCloseTo(0);
+    expect(appCanvas.blocks.Block_1_0).toBeDefined();
+    expect(appCanvas.blocks.Block_1_1).toBeDefined();
+    expect(appCanvas.blocks.Block_2_0).toBeDefined();
+    expect(appCanvas.blocks.Block_2_1).toBeDefined();
+  });
+
+  test('should shift all blocks to the left 1', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(20);
+    appCanvas.render = mockAppCanvasRender;
+    let block;
+    for (let i = 0; i < 2; i += 1) {
+      for (let j = 0; j < 2; j += 1) {
+        block = new Block(i, j);
+        appCanvas.blocks[`${block.toHashKey()}`] = block;
+      }
+    }
+
+    appCanvas.pan(-20, 0);
+    expect(appCanvas.offset.x).toBeCloseTo(0);
+    expect(appCanvas.offset.y).toBeCloseTo(0);
+    expect(appCanvas.blocks.Block_n1_0).toBeDefined();
+    expect(appCanvas.blocks.Block_n1_1).toBeDefined();
+    expect(appCanvas.blocks.Block_0_0).toBeDefined();
+    expect(appCanvas.blocks.Block_0_1).toBeDefined();
+  });
+
+  test('should shift all blocks up 1', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(20);
+    appCanvas.render = mockAppCanvasRender;
+    let block;
+    for (let i = 0; i < 2; i += 1) {
+      for (let j = 0; j < 2; j += 1) {
+        block = new Block(i, j);
+        appCanvas.blocks[`${block.toHashKey()}`] = block;
+      }
+    }
+
+    appCanvas.pan(0, -20);
+    expect(appCanvas.offset.x).toBeCloseTo(0);
+    expect(appCanvas.offset.y).toBeCloseTo(0);
+    expect(appCanvas.blocks.Block_0_n1).toBeDefined();
+    expect(appCanvas.blocks.Block_0_0).toBeDefined();
+    expect(appCanvas.blocks.Block_1_n1).toBeDefined();
+    expect(appCanvas.blocks.Block_1_0).toBeDefined();
+  });
+
+  test('should shift all blocks down 1', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(20);
+    appCanvas.render = mockAppCanvasRender;
+    let block;
+    for (let i = 0; i < 2; i += 1) {
+      for (let j = 0; j < 2; j += 1) {
+        block = new Block(i, j);
+        appCanvas.blocks[`${block.toHashKey()}`] = block;
+      }
+    }
+
+    appCanvas.pan(0, 20);
+    expect(appCanvas.offset.x).toBeCloseTo(0);
+    expect(appCanvas.offset.y).toBeCloseTo(0);
+    expect(appCanvas.blocks.Block_0_1).toBeDefined();
+    expect(appCanvas.blocks.Block_0_2).toBeDefined();
+    expect(appCanvas.blocks.Block_1_1).toBeDefined();
+    expect(appCanvas.blocks.Block_1_2).toBeDefined();
+  });
+
+  test('should drag canvas to the upper right until blocks shift left', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(20);
+    appCanvas.render = mockAppCanvasRender;
+    let block;
+    for (let i = 0; i < 2; i += 1) {
+      for (let j = 0; j < 2; j += 1) {
+        block = new Block(i, j);
+        appCanvas.blocks[`${block.toHashKey()}`] = block;
+      }
+    }
+
+    const dragStartEvent = new MouseEvent('dragstart', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 500,
+      clientY: 250
+    });
+    const dragEvent0 = new MouseEvent('drag', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 494,
+      clientY: 248
+    });
+    const dragEvent1 = new MouseEvent('drag', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 488,
+      clientY: 246
+    });
+    const dragEvent2 = new MouseEvent('drag', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 482,
+      clientY: 244
+    });
+    const dragEvent3 = new MouseEvent('drag', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 476,
+      clientY: 242
+    });
+    appCanvas.canvas.dispatchEvent(dragStartEvent);
+    appCanvas.canvas.dispatchEvent(dragEvent0);
+    appCanvas.canvas.dispatchEvent(dragEvent1);
+    appCanvas.canvas.dispatchEvent(dragEvent2);
+    appCanvas.canvas.dispatchEvent(dragEvent3);
+    expect(appCanvas.offset.x).toBeCloseTo(-4);
+    expect(appCanvas.offset.y).toBeCloseTo(-8);
+    expect(appCanvas.blocks.Block_n1_0).toBeDefined();
+    expect(appCanvas.blocks.Block_n1_1).toBeDefined();
+    expect(appCanvas.blocks.Block_0_0).toBeDefined();
+    expect(appCanvas.blocks.Block_0_1).toBeDefined();
+    expect(mockAppCanvasRender).toBeCalled();
   });
 });

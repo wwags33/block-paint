@@ -18,8 +18,18 @@
  */
 
 export default class ColorPalette {
+  constructor() {
+    this.length = 2;
+  }
 
-  static getColor() {
-    throw Error('Not implemented!');
+  getColor(index) {
+    switch (index) {
+      case 1:
+        return 'tomato';
+      case 2:
+        return 'silver';
+      default:
+        return 'black';
+    }
   }
 }
