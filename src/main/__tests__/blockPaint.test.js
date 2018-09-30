@@ -451,4 +451,58 @@ describe('AppCanvas class tests', () => {
     expect(appCanvas.blocks.Block_1_1).toBeDefined();
     expect(appCanvas.blocks.Block_1_2).toBeDefined();
   });
+
+  test('should create and render block at (1, 3)', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(20);
+    appCanvas.render = mockAppCanvasRender;
+
+    const clickEvent = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 20,
+      clientY: 60
+    });
+    appCanvas.canvas.dispatchEvent(clickEvent);
+    expect(appCanvas.blocks.Block_1_3).toBeDefined();
+    expect(mockAppCanvasRender).not.toBeCalled();
+  });
+
+  test('should change the color of the block at (2, 3)', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(20);
+    appCanvas.render = mockAppCanvasRender;
+
+    const block = new Block(2, 3, 0);
+    appCanvas.blocks[`${block.toHashKey()}`] = block;
+
+    const clickEvent = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 40,
+      clientY: 60
+    });
+    appCanvas.canvas.dispatchEvent(clickEvent);
+    expect(appCanvas.blocks.Block_2_3.colorIndex).toBe(1);
+    expect(mockAppCanvasRender).not.toBeCalled();
+  });
+
+  test('should remove the block at (1, 0)', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(20);
+    appCanvas.render = mockAppCanvasRender;
+
+    const block = new Block(1, 0, 2);
+    appCanvas.blocks[`${block.toHashKey()}`] = block;
+
+    const clickEvent = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 20,
+      clientY: 0
+    });
+    appCanvas.canvas.dispatchEvent(clickEvent);
+    expect(appCanvas.blocks.Block_1_2).not.toBeDefined();
+    expect(mockAppCanvasRender).toBeCalled();
+  });
 });

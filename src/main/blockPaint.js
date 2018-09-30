@@ -109,7 +109,7 @@ class AppCanvas {
     this.zoomOutHandler = this.zoomOut.bind(this);
     this.canvas.ondragstart = this.startPan.bind(this);
     this.canvas.ondrag = this.pan.bind(this);
-    // this.canvas.onclick = this.paintBlock.bind(this);
+    this.canvas.onclick = this.paintBlock.bind(this);
   }
 
   toggleGrid() {
@@ -178,6 +178,26 @@ class AppCanvas {
       this.blocks = newBlocks;
     }
     this.render();
+  }
+
+  paintBlock(event) {
+    const coordX = Math.floor(event.clientX / this.blockSize);
+    const coordY = Math.floor(event.clientY / this.blockSize);
+    let block = this.blocks[`${Block.getHashKey(coordX, coordY)}`];
+    if (block) {
+      block.nextColor();
+      if (block.colorIndex >= this.colorPalette.length) {
+        delete this.blocks[`${block.toHashKey()}`];
+        this.render();
+        return;
+      }
+    } else {
+      block = new Block(coordX, coordY);
+      this.blocks[`${block.toHashKey()}`] = block;
+    }
+    const ctx = this.canvas.getContext('2d');
+    ctx.translate(0.5, 0.5);
+    block.render(ctx, this.blockSize, this.colorPalette, this.offset);
   }
 }
 
