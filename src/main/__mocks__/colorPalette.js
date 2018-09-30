@@ -19,17 +19,20 @@
 
 export default class ColorPalette {
   constructor() {
-    this.length = 2;
+    this.length = 3;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   getColor(index) {
-    switch (index) {
+    switch (index % 3) {
+      case 0:
+        return 'black';
       case 1:
         return 'tomato';
       case 2:
         return 'silver';
       default:
-        return 'black';
+        throw Error('ColorPalette length exceeded!');
     }
   }
 }

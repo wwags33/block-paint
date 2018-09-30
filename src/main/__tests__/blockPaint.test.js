@@ -266,99 +266,28 @@ describe('AppCanvas class tests', () => {
     expect(mockAppCanvasRender).toBeCalled();
   });
 
-  test('should pan the canvas right 12.965 pixels and down 4.12', () => {
+  test('should pan the canvas right 12 pixels and down 4', () => {
     const mockAppCanvasRender = jest.fn();
-    const appCanvas = new AppCanvas(100, { x: -2.3, y: -1.111 });
+    const appCanvas = new AppCanvas(20);
     appCanvas.render = mockAppCanvasRender;
 
-    appCanvas.pan(15.265, 5.231);
-    expect(appCanvas.offset.x).toBeCloseTo(12.965);
-    expect(appCanvas.offset.y).toBeCloseTo(4.12);
+    const dragStartEvent = new MouseEvent('dragstart', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 100,
+      clientY: 150
+    });
+    const dragEvent = new MouseEvent('drag', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 112,
+      clientY: 154
+    });
+    appCanvas.canvas.dispatchEvent(dragStartEvent);
+    appCanvas.canvas.dispatchEvent(dragEvent);
+    expect(appCanvas.offset.x).toBeCloseTo(12);
+    expect(appCanvas.offset.y).toBeCloseTo(4);
     expect(mockAppCanvasRender).toBeCalled();
-  });
-
-  test('should shift all blocks to the right 1', () => {
-    const mockAppCanvasRender = jest.fn();
-    const appCanvas = new AppCanvas(20);
-    appCanvas.render = mockAppCanvasRender;
-    let block;
-    for (let i = 0; i < 2; i += 1) {
-      for (let j = 0; j < 2; j += 1) {
-        block = new Block(i, j);
-        appCanvas.blocks[`${block.toHashKey()}`] = block;
-      }
-    }
-
-    appCanvas.pan(20, 0);
-    expect(appCanvas.offset.x).toBeCloseTo(0);
-    expect(appCanvas.offset.y).toBeCloseTo(0);
-    expect(appCanvas.blocks.Block_1_0).toBeDefined();
-    expect(appCanvas.blocks.Block_1_1).toBeDefined();
-    expect(appCanvas.blocks.Block_2_0).toBeDefined();
-    expect(appCanvas.blocks.Block_2_1).toBeDefined();
-  });
-
-  test('should shift all blocks to the left 1', () => {
-    const mockAppCanvasRender = jest.fn();
-    const appCanvas = new AppCanvas(20);
-    appCanvas.render = mockAppCanvasRender;
-    let block;
-    for (let i = 0; i < 2; i += 1) {
-      for (let j = 0; j < 2; j += 1) {
-        block = new Block(i, j);
-        appCanvas.blocks[`${block.toHashKey()}`] = block;
-      }
-    }
-
-    appCanvas.pan(-20, 0);
-    expect(appCanvas.offset.x).toBeCloseTo(0);
-    expect(appCanvas.offset.y).toBeCloseTo(0);
-    expect(appCanvas.blocks.Block_n1_0).toBeDefined();
-    expect(appCanvas.blocks.Block_n1_1).toBeDefined();
-    expect(appCanvas.blocks.Block_0_0).toBeDefined();
-    expect(appCanvas.blocks.Block_0_1).toBeDefined();
-  });
-
-  test('should shift all blocks up 1', () => {
-    const mockAppCanvasRender = jest.fn();
-    const appCanvas = new AppCanvas(20);
-    appCanvas.render = mockAppCanvasRender;
-    let block;
-    for (let i = 0; i < 2; i += 1) {
-      for (let j = 0; j < 2; j += 1) {
-        block = new Block(i, j);
-        appCanvas.blocks[`${block.toHashKey()}`] = block;
-      }
-    }
-
-    appCanvas.pan(0, -20);
-    expect(appCanvas.offset.x).toBeCloseTo(0);
-    expect(appCanvas.offset.y).toBeCloseTo(0);
-    expect(appCanvas.blocks.Block_0_n1).toBeDefined();
-    expect(appCanvas.blocks.Block_0_0).toBeDefined();
-    expect(appCanvas.blocks.Block_1_n1).toBeDefined();
-    expect(appCanvas.blocks.Block_1_0).toBeDefined();
-  });
-
-  test('should shift all blocks down 1', () => {
-    const mockAppCanvasRender = jest.fn();
-    const appCanvas = new AppCanvas(20);
-    appCanvas.render = mockAppCanvasRender;
-    let block;
-    for (let i = 0; i < 2; i += 1) {
-      for (let j = 0; j < 2; j += 1) {
-        block = new Block(i, j);
-        appCanvas.blocks[`${block.toHashKey()}`] = block;
-      }
-    }
-
-    appCanvas.pan(0, 20);
-    expect(appCanvas.offset.x).toBeCloseTo(0);
-    expect(appCanvas.offset.y).toBeCloseTo(0);
-    expect(appCanvas.blocks.Block_0_1).toBeDefined();
-    expect(appCanvas.blocks.Block_0_2).toBeDefined();
-    expect(appCanvas.blocks.Block_1_1).toBeDefined();
-    expect(appCanvas.blocks.Block_1_2).toBeDefined();
   });
 
   test('should drag canvas to the upper right until blocks shift left', () => {
@@ -416,4 +345,115 @@ describe('AppCanvas class tests', () => {
     expect(appCanvas.blocks.Block_0_1).toBeDefined();
     expect(mockAppCanvasRender).toBeCalled();
   });
+
+  test('should drag canvas to the left until blocks shift right', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(20);
+    appCanvas.render = mockAppCanvasRender;
+    let block;
+    for (let i = 0; i < 2; i += 1) {
+      for (let j = 0; j < 2; j += 1) {
+        block = new Block(i, j);
+        appCanvas.blocks[`${block.toHashKey()}`] = block;
+      }
+    }
+
+    const dragStartEvent = new MouseEvent('dragstart', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 100,
+      clientY: 150
+    });
+    const dragEvent = new MouseEvent('drag', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 120,
+      clientY: 140
+    });
+    appCanvas.canvas.dispatchEvent(dragStartEvent);
+    appCanvas.canvas.dispatchEvent(dragEvent);
+    expect(appCanvas.offset.x).toBeCloseTo(0);
+    expect(appCanvas.offset.y).toBeCloseTo(-10);
+    expect(appCanvas.blocks.Block_1_0).toBeDefined();
+    expect(appCanvas.blocks.Block_1_1).toBeDefined();
+    expect(appCanvas.blocks.Block_2_0).toBeDefined();
+    expect(appCanvas.blocks.Block_2_1).toBeDefined();
+  });
+
+  test('should shift all blocks up 1', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(20);
+    appCanvas.render = mockAppCanvasRender;
+    let block;
+    for (let i = 0; i < 2; i += 1) {
+      for (let j = 0; j < 2; j += 1) {
+        block = new Block(i, j);
+        appCanvas.blocks[`${block.toHashKey()}`] = block;
+      }
+    }
+
+    const dragStartEvent = new MouseEvent('dragstart', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 100,
+      clientY: 150
+    });
+    const dragEvent = new MouseEvent('drag', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 100,
+      clientY: 130
+    });
+    appCanvas.canvas.dispatchEvent(dragStartEvent);
+    appCanvas.canvas.dispatchEvent(dragEvent);
+    expect(appCanvas.offset.x).toBeCloseTo(0);
+    expect(appCanvas.offset.y).toBeCloseTo(0);
+    expect(appCanvas.blocks.Block_0_n1).toBeDefined();
+    expect(appCanvas.blocks.Block_0_0).toBeDefined();
+    expect(appCanvas.blocks.Block_1_n1).toBeDefined();
+    expect(appCanvas.blocks.Block_1_0).toBeDefined();
+  });
+
+  test('should shift all blocks down 1', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(20);
+    appCanvas.render = mockAppCanvasRender;
+    let block;
+    for (let i = 0; i < 2; i += 1) {
+      for (let j = 0; j < 2; j += 1) {
+        block = new Block(i, j);
+        appCanvas.blocks[`${block.toHashKey()}`] = block;
+      }
+    }
+
+    const dragStartEvent = new MouseEvent('dragstart', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 100,
+      clientY: 150
+    });
+    const dragEvent = new MouseEvent('drag', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 100,
+      clientY: 170
+    });
+    appCanvas.canvas.dispatchEvent(dragStartEvent);
+    appCanvas.canvas.dispatchEvent(dragEvent);
+    expect(appCanvas.offset.x).toBeCloseTo(0);
+    expect(appCanvas.offset.y).toBeCloseTo(0);
+    expect(appCanvas.blocks.Block_0_1).toBeDefined();
+    expect(appCanvas.blocks.Block_0_2).toBeDefined();
+    expect(appCanvas.blocks.Block_1_1).toBeDefined();
+    expect(appCanvas.blocks.Block_1_2).toBeDefined();
+  });
+
+
+  // test('should create and render block at (1, 3)', () => {
+
+  // });
+
+  // test('', () => {
+
+  // });
 });

@@ -18,8 +18,7 @@
  */
 
 export default class ColorPalette {
-
-  static getColor() {
-    throw Error('Not implemented!');
+  getColor() {
+    throw Error(`${this} not implemented!`);
   }
 }

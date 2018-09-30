@@ -103,32 +103,9 @@ class AppCanvas {
     this.resizeHandler = this.resize.bind(this);
     this.zoomInHandler = this.zoomIn.bind(this);
     this.zoomOutHandler = this.zoomOut.bind(this);
-
-    // Pan mechanism.
-    const boundPan = this.pan.bind(this);
-    const panHandlers = (function panClosure() { // Closure to avoid using that/self.
-      let dragCheckpointX = 0;
-      let dragCheckpointY = 0;
-
-      function initialDragCheckpointSet(event) {
-        dragCheckpointX = event.clientX;
-        dragCheckpointY = event.clientY;
-      }
-
-      function panAndCheckpointSet(event) {
-        boundPan(event.clientX - dragCheckpointX, event.clientY - dragCheckpointY);
-        dragCheckpointX = event.clientX;
-        dragCheckpointY = event.clientY;
-      }
-
-      return {
-        startDrag: initialDragCheckpointSet,
-        continueDrag: panAndCheckpointSet
-      };
-    }());
-
-    this.canvas.ondragstart = panHandlers.startDrag;
-    this.canvas.ondrag = panHandlers.continueDrag;
+    this.canvas.ondragstart = this.startPan.bind(this);
+    this.canvas.ondrag = this.pan.bind(this);
+    // this.canvas.onclick = this.paintBlock.bind(this);
   }
 
   toggleGrid() {
@@ -151,21 +128,26 @@ class AppCanvas {
     this.render();
   }
 
-  // Bind to AppCanvas object in listener.
   zoomIn() {
     this.blockSize = Math.ceil(this.blockSize * 2);
     this.render();
   }
 
-  // Bind to AppCanvas object in listener.
   zoomOut() {
     this.blockSize = Math.ceil(this.blockSize / 2);
     this.render();
   }
 
-  pan(x, y) {
-    this.offset.x += x;
-    this.offset.y += y;
+  startPan(event) {
+    this.dragCheckpointX = event.clientX;
+    this.dragCheckpointY = event.clientY;
+  }
+
+  pan(event) {
+    this.offset.x += (event.clientX - this.dragCheckpointX);
+    this.offset.y += (event.clientY - this.dragCheckpointY);
+    this.dragCheckpointX = event.clientX;
+    this.dragCheckpointY = event.clientY;
     let moveX = 0;
     let moveY = 0;
     if (this.offset.x >= this.blockSize) {
@@ -194,6 +176,8 @@ class AppCanvas {
     this.render();
   }
 
+  // paintBlock(event) {
+  // }
   // paintBlock(app) {
   //   const coordinateX = Math.floor(this.clientX / app.blockSize);
   //   const coordinateY = Math.floor(this.clientY / app.blockSize);
@@ -210,6 +194,10 @@ class AppCanvas {
   //   }
   //   gridBlock.render();
   // }
+
+  // rollover colorpalette overflow
+
+  // clear colorpalette overflow
 }
 
 // export default class App {
