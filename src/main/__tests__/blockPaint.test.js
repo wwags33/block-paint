@@ -239,7 +239,7 @@ describe('AppCanvas class tests', () => {
     window.innerWidth = 500;
     window.innerHeight = 250;
 
-    appCanvas.resize();
+    appCanvas.resizeHandler();
     expect(appCanvas.blockSize).toBe(100); // Should not change.
     expect(appCanvas.canvas.width).toBe(500);
     expect(appCanvas.canvas.height).toBe(250);
@@ -251,7 +251,7 @@ describe('AppCanvas class tests', () => {
     const appCanvas = new AppCanvas(100);
     appCanvas.render = mockAppCanvasRender;
 
-    appCanvas.zoomIn();
+    appCanvas.zoomHandlers.in();
     expect(appCanvas.blockSize).toBeCloseTo(200);
     expect(appCanvas.canvas.width).toBe(window.innerWidth); // Should not change.
     expect(appCanvas.canvas.height).toBe(window.innerHeight); // Should not change.
@@ -263,7 +263,7 @@ describe('AppCanvas class tests', () => {
     const appCanvas = new AppCanvas(100);
     appCanvas.render = mockAppCanvasRender;
 
-    appCanvas.zoomOut();
+    appCanvas.zoomHandlers.out();
     expect(appCanvas.blockSize).toBeCloseTo(50);
     expect(appCanvas.canvas.width).toBe(window.innerWidth); // Should not change.
     expect(appCanvas.canvas.height).toBe(window.innerHeight); // Should not change.
@@ -503,6 +503,42 @@ describe('AppCanvas class tests', () => {
     });
     appCanvas.canvas.dispatchEvent(clickEvent);
     expect(appCanvas.blocks.Block_1_2).not.toBeDefined();
+    expect(mockAppCanvasRender).toBeCalled();
+  });
+
+  test('should leave 2 blocks, fold 1 block, and clear 1 block', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100);
+    appCanvas.render = mockAppCanvasRender;
+    // Mock ColorPalette has length of 3.
+    appCanvas.blocks.Block_0_0 = new Block(0, 0, 0);
+    appCanvas.blocks.Block_0_1 = new Block(0, 1, 1);
+    appCanvas.blocks.Block_1_0 = new Block(1, 0, 3);
+    appCanvas.blocks.Block_1_1 = new Block(1, 1, 4);
+
+    appCanvas.colorPaletteHandlers.overflowFold();
+    expect(appCanvas.blocks.Block_0_0).toBeDefined();
+    expect(appCanvas.blocks.Block_0_1).toBeDefined();
+    expect(appCanvas.blocks.Block_1_0).not.toBeDefined();
+    expect(appCanvas.blocks.Block_1_1.colorIndex).toBe(0);
+    expect(mockAppCanvasRender).toBeCalled();
+  });
+
+  test('should leave 2 blocks and clear 2 blocks', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100);
+    appCanvas.render = mockAppCanvasRender;
+    // Mock ColorPalette has length of 3.
+    appCanvas.blocks.Block_0_0 = new Block(0, 0, 0);
+    appCanvas.blocks.Block_0_1 = new Block(0, 1, 1);
+    appCanvas.blocks.Block_1_0 = new Block(1, 0, 3);
+    appCanvas.blocks.Block_1_1 = new Block(1, 1, 4);
+
+    appCanvas.colorPaletteHandlers.overflowClear();
+    expect(appCanvas.blocks.Block_0_0).toBeDefined();
+    expect(appCanvas.blocks.Block_0_1).toBeDefined();
+    expect(appCanvas.blocks.Block_1_0).not.toBeDefined();
+    expect(appCanvas.blocks.Block_1_1).not.toBeDefined();
     expect(mockAppCanvasRender).toBeCalled();
   });
 });

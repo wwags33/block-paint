@@ -105,8 +105,15 @@ class AppCanvas {
     this.colorPalette = new ColorPalette();
     // Event Handlers.
     this.resizeHandler = this.resize.bind(this);
-    this.zoomInHandler = this.zoomIn.bind(this);
-    this.zoomOutHandler = this.zoomOut.bind(this);
+    this.zoomHandlers = {
+      in: this.zoomIn.bind(this),
+      out: this.zoomOut.bind(this)
+    };
+    this.colorPaletteHandlers = {
+      overflowFold: this.colorPaletteOverflowFold.bind(this),
+      overflowClear: this.colorPaletteOverflowClear.bind(this)
+    };
+    // Canvas event handlers.
     this.canvas.ondragstart = this.startPan.bind(this);
     this.canvas.ondrag = this.pan.bind(this);
     this.canvas.onclick = this.paintBlock.bind(this);
@@ -170,11 +177,13 @@ class AppCanvas {
     }
     if (moveX !== 0 || moveY !== 0) {
       const newBlocks = {};
-      Object.values(this.blocks).forEach((block) => {
-        block.blockX += moveX;
-        block.blockY += moveY;
-        newBlocks[`${block.toHashKey()}`] = block;
-      });
+      Object.values(this.blocks).forEach(
+        (block) => {
+          block.blockX += moveX;
+          block.blockY += moveY;
+          newBlocks[`${block.toHashKey()}`] = block;
+        }
+      );
       this.blocks = newBlocks;
     }
     this.render();
@@ -198,6 +207,29 @@ class AppCanvas {
     const ctx = this.canvas.getContext('2d');
     ctx.translate(0.5, 0.5);
     block.render(ctx, this.blockSize, this.colorPalette, this.offset);
+  }
+
+  colorPaletteOverflowFold() {
+    Object.values(this.blocks).forEach(
+      (block) => {
+        block.colorIndex %= (this.colorPalette.length + 1);
+        if (block.colorIndex === this.colorPalette.length) {
+          delete this.blocks[`${block.toHashKey()}`];
+        }
+      }
+    );
+    this.render();
+  }
+
+  colorPaletteOverflowClear() {
+    Object.values(this.blocks).forEach(
+      (block) => {
+        if (block.colorIndex >= this.colorPalette.length) {
+          delete this.blocks[`${block.toHashKey()}`];
+        }
+      }
+    );
+    this.render();
   }
 }
 
