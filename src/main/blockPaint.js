@@ -34,8 +34,12 @@ class Block {
   }
 
   toHashKey() {
-    let x = this.blockX;
-    let y = this.blockY;
+    return Block.getHashKey(this.blockX, this.blockY);
+  }
+
+  static getHashKey(blockX, blockY) {
+    let x = blockX;
+    let y = blockY;
     if (x < 0) {
       x = `n${Math.abs(x)}`;
     }
@@ -175,51 +179,7 @@ class AppCanvas {
     }
     this.render();
   }
-
-  // paintBlock(event) {
-  // }
-  // paintBlock(app) {
-  //   const coordinateX = Math.floor(this.clientX / app.blockSize);
-  //   const coordinateY = Math.floor(this.clientY / app.blockSize);
-  //   const coordinateString = `X${coordinateX}Y${coordinateY}`;
-  //   const block = app.gridBlocks[coordinateString]
-  //   if (block) {
-  //     block.colorIndex += 1;
-  //     if (block.colorIndex >= app.colorPalette.paletteSize) {
-  //       delete app.gridBlocks[coordinateString];
-  //       // unpaint block????
-  //     }
-  //   } else {
-  //     app.gridBlocks[coordinateString] = new GridBlock(app.blockSize, coordinateX, coordinateY);
-  //   }
-  //   gridBlock.render();
-  // }
-
-  // rollover colorpalette overflow
-
-  // clear colorpalette overflow
 }
-
-// export default class App {
-//   // setListeners() {
-//   //   window.addEventListener('resize', this.resize());
-//   //   this.canvasElement.addEventListener('click', this.paintBlock());
-//   //   this.canvasElement.addEventListener('drag', this.pan());
-//   // }
-
-//   // save() {
-//   //   const data = {
-//   //     blockSize,
-//   //     // colorPalette,
-//   //     gridBlocks
-//   //   };
-//   //   return JSON.stringify(data);
-//   // }
-
-//   // load(data) {
-//   //   // { blockSize, gridBlocks } = JSON.parse(data);
-//   // }
-// }
 
 export {
   Block,

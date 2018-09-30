@@ -27,6 +27,10 @@ import ColorPalette from '../colorPalette';
 jest.mock('../colorPalette');
 
 describe('Block class tests', () => {
+  test('should get a hash key for (-3, 8)', () => {
+    expect(Block.getHashKey(-3, 8)).toBe('Block_n3_8');
+  });
+
   test('should create a Block object with defaults', () => {
     const block = new Block();
     expect(block.blockX).toBe(0);
@@ -447,13 +451,4 @@ describe('AppCanvas class tests', () => {
     expect(appCanvas.blocks.Block_1_1).toBeDefined();
     expect(appCanvas.blocks.Block_1_2).toBeDefined();
   });
-
-
-  // test('should create and render block at (1, 3)', () => {
-
-  // });
-
-  // test('', () => {
-
-  // });
 });
