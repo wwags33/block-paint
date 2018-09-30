@@ -31,6 +31,10 @@ describe('Block class tests', () => {
     expect(Block.getHashKey(-3, 8)).toBe('Block_n3_8');
   });
 
+  test('should use 0 for -0)', () => {
+    expect(Block.getHashKey(-0, 0)).toBe('Block_0_0');
+  });
+
   test('should create a Block object with defaults', () => {
     const block = new Block();
     expect(block.blockX).toBe(0);
@@ -227,7 +231,9 @@ describe('AppCanvas class tests', () => {
     expect(mockGridRender).toBeCalled();
     expect(mockBlockRender.mock.calls).toHaveLength(100);
   });
+});
 
+describe('General event handler tests', () => {
   test('should correctly resize and render the canvas', () => {
     const mockAppCanvasRender = jest.fn();
     const appCanvas = new AppCanvas(100);
@@ -270,6 +276,44 @@ describe('AppCanvas class tests', () => {
     expect(mockAppCanvasRender).toBeCalled();
   });
 
+  test('should leave 2 blocks, fold 1 block, and clear 1 block', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100);
+    appCanvas.render = mockAppCanvasRender;
+    // Mock ColorPalette has length of 3.
+    appCanvas.blocks.Block_0_0 = new Block(0, 0, 0);
+    appCanvas.blocks.Block_0_1 = new Block(0, 1, 1);
+    appCanvas.blocks.Block_1_0 = new Block(1, 0, 3);
+    appCanvas.blocks.Block_1_1 = new Block(1, 1, 4);
+
+    appCanvas.colorPaletteHandlers.overflowFold();
+    expect(appCanvas.blocks.Block_0_0).toBeDefined();
+    expect(appCanvas.blocks.Block_0_1).toBeDefined();
+    expect(appCanvas.blocks.Block_1_0).not.toBeDefined();
+    expect(appCanvas.blocks.Block_1_1.colorIndex).toBe(0);
+    expect(mockAppCanvasRender).toBeCalled();
+  });
+
+  test('should leave 2 blocks and clear 2 blocks', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100);
+    appCanvas.render = mockAppCanvasRender;
+    // Mock ColorPalette has length of 3.
+    appCanvas.blocks.Block_0_0 = new Block(0, 0, 0);
+    appCanvas.blocks.Block_0_1 = new Block(0, 1, 1);
+    appCanvas.blocks.Block_1_0 = new Block(1, 0, 3);
+    appCanvas.blocks.Block_1_1 = new Block(1, 1, 4);
+
+    appCanvas.colorPaletteHandlers.overflowClear();
+    expect(appCanvas.blocks.Block_0_0).toBeDefined();
+    expect(appCanvas.blocks.Block_0_1).toBeDefined();
+    expect(appCanvas.blocks.Block_1_0).not.toBeDefined();
+    expect(appCanvas.blocks.Block_1_1).not.toBeDefined();
+    expect(mockAppCanvasRender).toBeCalled();
+  });
+});
+
+describe('Canvas event handler tests', () => {
   test('should pan the canvas right 12 pixels and down 4', () => {
     const mockAppCanvasRender = jest.fn();
     const appCanvas = new AppCanvas(20);
@@ -505,40 +549,285 @@ describe('AppCanvas class tests', () => {
     expect(appCanvas.blocks.Block_1_2).not.toBeDefined();
     expect(mockAppCanvasRender).toBeCalled();
   });
+});
 
-  test('should leave 2 blocks, fold 1 block, and clear 1 block', () => {
+describe('AppCanvas save and load tests', () => {
+  test('should save the AppCanvas state', () => {
+    const appCanvas = new AppCanvas(120, { x: 88, y: 27 });
+    const block0 = new Block(1, 2, 0);
+    const block1 = new Block(2, 3, 1);
+    appCanvas.blocks.Block_1_2 = block0;
+    appCanvas.blocks.Block_2_3 = block1;
+
+    const savedAppCanvas = appCanvas.save();
+    expect(savedAppCanvas.blockSize).toBe(120);
+    expect(savedAppCanvas.offset).toEqual({ x: 88, y: 27 });
+    // colorPalette.save is stubbed in manual mock.
+    expect(appCanvas.colorPalette.save).toBeCalled();
+    expect(savedAppCanvas.savedBlocks).toEqual([[1, 2, 0], [2, 3, 1]]);
+  });
+
+  test('should load the AppCanvas state from input', () => {
     const mockAppCanvasRender = jest.fn();
-    const appCanvas = new AppCanvas(100);
+    const appCanvas = new AppCanvas(100, { x: 0, y: 0 });
     appCanvas.render = mockAppCanvasRender;
-    // Mock ColorPalette has length of 3.
-    appCanvas.blocks.Block_0_0 = new Block(0, 0, 0);
-    appCanvas.blocks.Block_0_1 = new Block(0, 1, 1);
-    appCanvas.blocks.Block_1_0 = new Block(1, 0, 3);
-    appCanvas.blocks.Block_1_1 = new Block(1, 1, 4);
+    const block0 = new Block(1, 2, 0);
+    const block1 = new Block(2, 3, 1);
+    appCanvas.blocks.Block_1_2 = block0;
+    appCanvas.blocks.Block_2_3 = block1;
 
-    appCanvas.colorPaletteHandlers.overflowFold();
-    expect(appCanvas.blocks.Block_0_0).toBeDefined();
-    expect(appCanvas.blocks.Block_0_1).toBeDefined();
-    expect(appCanvas.blocks.Block_1_0).not.toBeDefined();
-    expect(appCanvas.blocks.Block_1_1.colorIndex).toBe(0);
+    const savedData = {
+      blockSize: 25,
+      offset: {
+        x: 14,
+        y: -17
+      },
+      savedColorPalette: {}, // colorPalette.load is mocked.
+      savedBlocks: [[1, 2, 3], [2, -3, 4]]
+    };
+
+    expect(appCanvas.load(savedData)).toBe(true);
+    expect(appCanvas.blockSize).toBe(25);
+    expect(appCanvas.offset).toEqual({ x: 14, y: -17 });
+    // colorPalette.load is mocked in manual mock.
+    expect(appCanvas.colorPalette.load).toBeCalled();
+    expect(appCanvas.blocks.Block_1_2.colorIndex).toBe(3);
+    expect(appCanvas.blocks.Block_2_n3.colorIndex).toBe(4);
+    expect(appCanvas.blocks.Block_2_3).not.toBeDefined();
     expect(mockAppCanvasRender).toBeCalled();
   });
 
-  test('should leave 2 blocks and clear 2 blocks', () => {
+  test('should load canvas without offset', () => {
     const mockAppCanvasRender = jest.fn();
-    const appCanvas = new AppCanvas(100);
+    const appCanvas = new AppCanvas(100, { x: -4, y: 5 });
     appCanvas.render = mockAppCanvasRender;
-    // Mock ColorPalette has length of 3.
-    appCanvas.blocks.Block_0_0 = new Block(0, 0, 0);
-    appCanvas.blocks.Block_0_1 = new Block(0, 1, 1);
-    appCanvas.blocks.Block_1_0 = new Block(1, 0, 3);
-    appCanvas.blocks.Block_1_1 = new Block(1, 1, 4);
+    const block0 = new Block(1, 2, 0);
+    const block1 = new Block(2, 3, 1);
+    appCanvas.blocks.Block_1_2 = block0;
+    appCanvas.blocks.Block_2_3 = block1;
 
-    appCanvas.colorPaletteHandlers.overflowClear();
-    expect(appCanvas.blocks.Block_0_0).toBeDefined();
-    expect(appCanvas.blocks.Block_0_1).toBeDefined();
-    expect(appCanvas.blocks.Block_1_0).not.toBeDefined();
-    expect(appCanvas.blocks.Block_1_1).not.toBeDefined();
-    expect(mockAppCanvasRender).toBeCalled();
+    const savedData = {
+      blockSize: 25,
+      savedColorPalette: {}, // colorPalette.load is mocked.
+      savedBlocks: [[1, 2, 3], [2, -3, 4]]
+    };
+
+    expect(appCanvas.load(savedData)).toBe(true);
+    expect(appCanvas.offset).toEqual({ x: 0, y: 0 });
+  });
+
+  test('should load canvas without offset.x', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100, { x: -4, y: 5 });
+    appCanvas.render = mockAppCanvasRender;
+    const block0 = new Block(1, 2, 0);
+    const block1 = new Block(2, 3, 1);
+    appCanvas.blocks.Block_1_2 = block0;
+    appCanvas.blocks.Block_2_3 = block1;
+
+    const savedData = {
+      blockSize: 25,
+      offset: { y: 10 },
+      savedColorPalette: {}, // colorPalette.load is mocked.
+      savedBlocks: [[1, 2, 3], [2, -3, 4]]
+    };
+
+    expect(appCanvas.load(savedData)).toBe(true);
+    expect(appCanvas.offset).toEqual({ x: 0, y: 10 });
+  });
+
+  test('should load canvas without offset.y', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100, { x: -4, y: 5 });
+    appCanvas.render = mockAppCanvasRender;
+    const block0 = new Block(1, 2, 0);
+    const block1 = new Block(2, 3, 1);
+    appCanvas.blocks.Block_1_2 = block0;
+    appCanvas.blocks.Block_2_3 = block1;
+
+    const savedData = {
+      blockSize: 25,
+      offset: { x: -2 },
+      savedColorPalette: {}, // colorPalette.load is mocked.
+      savedBlocks: [[1, 2, 3], [2, -3, 4]]
+    };
+
+    expect(appCanvas.load(savedData)).toBe(true);
+    expect(appCanvas.offset).toEqual({ x: -2, y: 0 });
+  });
+
+  test('should restore original canvas state and error error on bad blockSize', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100, { x: 1, y: 2 });
+    appCanvas.render = mockAppCanvasRender;
+    const block0 = new Block(1, 2, 0);
+    const block1 = new Block(2, 3, 1);
+    appCanvas.blocks.Block_1_2 = block0;
+    appCanvas.blocks.Block_2_3 = block1;
+
+    const savedData = {
+      blockSize: 'not a number',
+      offset: {
+        x: 14,
+        y: -17
+      },
+      savedColorPalette: {}, // colorPalette.load is mocked.
+      savedBlocks: [[1, 2, 3], [2, -3, 4]]
+    };
+
+    const error = appCanvas.load(savedData);
+    expect(error instanceof TypeError).toBe(true);
+    // Restored state.
+    expect(appCanvas.blockSize).toBe(100);
+    expect(appCanvas.offset).toEqual({ x: 1, y: 2 });
+    // colorPalette save and load are stubbed and mocked in manual mock.
+    // Load called with stub output during restore, otherwise called with {}.
+    expect(appCanvas.colorPalette.load).toBeCalledWith(appCanvas.colorPalette.saveStubOutput);
+    expect(appCanvas.blocks.Block_1_2.colorIndex).toBe(0);
+    expect(appCanvas.blocks.Block_2_3.colorIndex).toBe(1);
+    expect(appCanvas.blocks.Block_2_n3).not.toBeDefined();
+    expect(mockAppCanvasRender).not.toBeCalled();
+  });
+
+  test('should return TypeError on bad offset x', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100, { x: 1, y: 2 });
+    appCanvas.render = mockAppCanvasRender;
+    const block0 = new Block(1, 2, 0);
+    const block1 = new Block(2, 3, 1);
+    appCanvas.blocks.Block_1_2 = block0;
+    appCanvas.blocks.Block_2_3 = block1;
+
+    const savedData = {
+      blockSize: 25,
+      offset: {
+        x: 'not a number',
+        y: -17
+      },
+      savedColorPalette: {}, // colorPalette.load is mocked.
+      savedBlocks: [[1, 2, 3], [2, -3, 4]]
+    };
+
+    const error = appCanvas.load(savedData);
+    expect(error instanceof TypeError).toBe(true);
+    // Restored state.
+    expect(appCanvas.blockSize).toBe(100);
+    expect(appCanvas.offset).toEqual({ x: 1, y: 2 });
+    // colorPalette save and load are stubbed and mocked in manual mock.
+    // Load called with stub output during restore, otherwise called with {}.
+    expect(appCanvas.colorPalette.load).toBeCalledWith(appCanvas.colorPalette.saveStubOutput);
+    expect(appCanvas.blocks.Block_1_2.colorIndex).toBe(0);
+    expect(appCanvas.blocks.Block_2_3.colorIndex).toBe(1);
+    expect(appCanvas.blocks.Block_2_n3).not.toBeDefined();
+    expect(mockAppCanvasRender).not.toBeCalled();
+  });
+
+  test('should return TypeError on bad offset y', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100, { x: 1, y: 2 });
+    appCanvas.render = mockAppCanvasRender;
+    const block0 = new Block(1, 2, 0);
+    const block1 = new Block(2, 3, 1);
+    appCanvas.blocks.Block_1_2 = block0;
+    appCanvas.blocks.Block_2_3 = block1;
+
+    const savedData = {
+      blockSize: 25,
+      offset: {
+        x: 14,
+        y: ['not a number']
+      },
+      savedColorPalette: {}, // colorPalette.load is mocked.
+      savedBlocks: [[1, 2, 3], [2, -3, 4]]
+    };
+
+    const error = appCanvas.load(savedData);
+    expect(error instanceof TypeError).toBe(true);
+    // Restored state.
+    expect(appCanvas.blockSize).toBe(100);
+    expect(appCanvas.offset).toEqual({ x: 1, y: 2 });
+    // colorPalette save and load are stubbed and mocked in manual mock.
+    // Load called with stub output during restore, otherwise called with {}.
+    expect(appCanvas.colorPalette.load).toBeCalledWith(appCanvas.colorPalette.saveStubOutput);
+    expect(appCanvas.blocks.Block_1_2.colorIndex).toBe(0);
+    expect(appCanvas.blocks.Block_2_3.colorIndex).toBe(1);
+    expect(appCanvas.blocks.Block_2_n3).not.toBeDefined();
+    expect(mockAppCanvasRender).not.toBeCalled();
+  });
+
+  test('should return Error on invalid block structure', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100, { x: 1, y: 2 });
+    appCanvas.render = mockAppCanvasRender;
+    const block0 = new Block(1, 2, 0);
+    const block1 = new Block(2, 3, 1);
+    appCanvas.blocks.Block_1_2 = block0;
+    appCanvas.blocks.Block_2_3 = block1;
+
+    const savedData = {
+      blockSize: 25,
+      offset: {
+        x: 14,
+        y: -17
+      },
+      savedColorPalette: {}, // colorPalette.load is mocked.
+      savedBlocks: [[1, 2, 3, 4, 5], [2, -3, 4]]
+    };
+
+    const error = appCanvas.load(savedData);
+    expect(error instanceof Error).toBe(true);
+    // Restored state.
+    expect(appCanvas.blockSize).toBe(100);
+    expect(appCanvas.offset).toEqual({ x: 1, y: 2 });
+    // colorPalette save and load are stubbed and mocked in manual mock.
+    // Load called with stub output during restore, otherwise called with {}.
+    expect(appCanvas.colorPalette.load).toBeCalledWith(appCanvas.colorPalette.saveStubOutput);
+    expect(appCanvas.blocks.Block_1_2.colorIndex).toBe(0);
+    expect(appCanvas.blocks.Block_2_3.colorIndex).toBe(1);
+    expect(appCanvas.blocks.Block_2_n3).not.toBeDefined();
+    expect(mockAppCanvasRender).not.toBeCalled();
+  });
+
+  test('should return TypeError on invalid block data', () => {
+    const mockAppCanvasRender = jest.fn();
+    const appCanvas = new AppCanvas(100, { x: 1, y: 2 });
+    appCanvas.render = mockAppCanvasRender;
+    const block0 = new Block(1, 2, 0);
+    const block1 = new Block(2, 3, 1);
+    appCanvas.blocks.Block_1_2 = block0;
+    appCanvas.blocks.Block_2_3 = block1;
+
+    const savedData = {
+      blockSize: 25,
+      offset: {
+        x: 14,
+        y: -17
+      },
+      savedColorPalette: {}, // colorPalette.load is mocked.
+      savedBlocks: [[1, 2, 3], ['two', 'negative three', 'four']]
+    };
+
+    const error = appCanvas.load(savedData);
+    expect(error instanceof TypeError).toBe(true);
+    // Restored state.
+    expect(appCanvas.blockSize).toBe(100);
+    expect(appCanvas.offset).toEqual({ x: 1, y: 2 });
+    // colorPalette save and load are stubbed and mocked in manual mock.
+    // Load called with stub output during restore, otherwise called with {}.
+    expect(appCanvas.colorPalette.load).toBeCalledWith(appCanvas.colorPalette.saveStubOutput);
+    expect(appCanvas.blocks.Block_1_2.colorIndex).toBe(0);
+    expect(appCanvas.blocks.Block_2_3.colorIndex).toBe(1);
+    expect(appCanvas.blocks.Block_2_n3).not.toBeDefined();
+    expect(mockAppCanvasRender).not.toBeCalled();
+  });
+
+  test('should return the output of canvas.toDataURL from getCanvasData', () => {
+    const mockToDataURL = jest.fn(() => 'mock data');
+    const mockCanvas = { toDataURL: mockToDataURL };
+    const appCanvas = new AppCanvas();
+    appCanvas.canvas = mockCanvas;
+
+    expect(appCanvas.getCanvasData()).toBe('mock data');
+    expect(appCanvas.canvas.toDataURL).toBeCalled();
   });
 });

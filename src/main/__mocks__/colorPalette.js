@@ -20,6 +20,9 @@
 export default class ColorPalette {
   constructor() {
     this.length = 3;
+    this.saveStubOutput = 'color palette state';
+    this.save = jest.fn(() => this.saveStubOutput);
+    this.load = jest.fn();
   }
 
   // eslint-disable-next-line class-methods-use-this

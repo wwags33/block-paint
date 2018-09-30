@@ -149,6 +149,25 @@ class AppCanvas {
     this.render();
   }
 
+  colorPaletteOverflowFold() {
+    Object.values(this.blocks).forEach((block) => {
+      block.colorIndex %= (this.colorPalette.length + 1);
+      if (block.colorIndex === this.colorPalette.length) {
+        delete this.blocks[`${block.toHashKey()}`];
+      }
+    });
+    this.render();
+  }
+
+  colorPaletteOverflowClear() {
+    Object.values(this.blocks).forEach((block) => {
+      if (block.colorIndex >= this.colorPalette.length) {
+        delete this.blocks[`${block.toHashKey()}`];
+      }
+    });
+    this.render();
+  }
+
   startPan(event) {
     this.dragCheckpointX = event.clientX;
     this.dragCheckpointY = event.clientY;
@@ -209,27 +228,89 @@ class AppCanvas {
     block.render(ctx, this.blockSize, this.colorPalette, this.offset);
   }
 
-  colorPaletteOverflowFold() {
+  save() {
+    const { blockSize, offset } = this;
+    const savedColorPalette = this.colorPalette.save();
+    const savedBlocks = [];
     Object.values(this.blocks).forEach(
-      (block) => {
-        block.colorIndex %= (this.colorPalette.length + 1);
-        if (block.colorIndex === this.colorPalette.length) {
-          delete this.blocks[`${block.toHashKey()}`];
-        }
-      }
+      block => savedBlocks.push([block.blockX, block.blockY, block.colorIndex])
     );
-    this.render();
+    return {
+      blockSize,
+      offset,
+      savedColorPalette,
+      savedBlocks
+    };
   }
 
-  colorPaletteOverflowClear() {
-    Object.values(this.blocks).forEach(
-      (block) => {
-        if (block.colorIndex >= this.colorPalette.length) {
-          delete this.blocks[`${block.toHashKey()}`];
-        }
+  // Must check return value with ===
+  // Type checking here since we don't know/trust the source.
+  load(savedData) {
+    const originalBlockSize = this.blockSize;
+    const originalOffset = Object.assign({}, this.offset);
+    const originalBlocks = this.blocks;
+    const originalColorPaletteState = this.colorPalette.save();
+
+    try {
+      // blockSize
+      const parsedBlockSize = Number(savedData.blockSize);
+      if (Number.isNaN(parsedBlockSize)) {
+        throw new TypeError(`blockSize must be a number: ${savedData.blockSize}`);
       }
-    );
-    this.render();
+      this.blockSize = parsedBlockSize;
+      // offset
+      if (savedData.offset && savedData.offset.x) {
+        const parsedOffsetX = Number(savedData.offset.x);
+        if (Number.isNaN(parsedOffsetX)) {
+          throw new TypeError(`offset.x must be a number: ${savedData.offset.x}`);
+        }
+        this.offset.x = parsedOffsetX;
+      } else {
+        this.offset.x = 0;
+      }
+      if (savedData.offset && savedData.offset.y) {
+        const parsedOffsetY = Number(savedData.offset.y);
+        if (Number.isNaN(parsedOffsetY)) {
+          throw new TypeError(`offset.y must be a number: ${savedData.offset.y}`);
+        }
+        this.offset.y = parsedOffsetY;
+      } else {
+        this.offset.y = 0;
+      }
+      // colorPalette
+      this.colorPalette.load(savedData.savedColorPalette);
+      // Deploy blocks
+      this.blocks = {};
+      let block;
+      let parsedX;
+      let parsedY;
+      let parsedColorIndex;
+      savedData.savedBlocks.forEach((blockArray) => {
+        if (blockArray.length !== 3) {
+          throw Error(`Invalid block detected: ${blockArray}`);
+        }
+        parsedX = Number.parseInt(blockArray[0], 10);
+        parsedY = Number.parseInt(blockArray[1], 10);
+        parsedColorIndex = Number.parseInt(blockArray[2], 10);
+        if (Number.isNaN(parsedX + parsedY + parsedColorIndex)) {
+          throw TypeError(`Invalid block data detected: ${blockArray}`);
+        }
+        block = new Block(parsedX, parsedY, parsedColorIndex);
+        this.blocks[`${block.toHashKey()}`] = block;
+      });
+      this.render();
+      return true;
+    } catch (error) {
+      this.blockSize = originalBlockSize;
+      this.offset = originalOffset;
+      this.colorPalette.load(originalColorPaletteState);
+      this.blocks = originalBlocks;
+      return error;
+    }
+  }
+
+  getCanvasData() {
+    return this.canvas.toDataURL();
   }
 }
 
