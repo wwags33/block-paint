@@ -18,6 +18,14 @@
  */
 
 export default class ColorPalette {
+  constructor() {
+    throw Error('ColorPalette not implemented!');
+  }
+
+  edit() {
+    throw Error(`${this} not implemented!`);
+  }
+
   getColor() {
     throw Error(`${this} not implemented!`);
   }

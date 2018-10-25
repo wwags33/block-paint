@@ -110,6 +110,7 @@ class AppCanvas {
       out: this.zoomOut.bind(this)
     };
     this.colorPaletteHandlers = {
+      edit: this.colorPalette.edit,
       overflowFold: this.colorPaletteOverflowFold.bind(this),
       overflowClear: this.colorPaletteOverflowClear.bind(this)
     };
@@ -139,13 +140,13 @@ class AppCanvas {
     this.render();
   }
 
-  zoomIn() {
-    this.blockSize = Math.ceil(this.blockSize * 2);
+  zoomIn(factor = 2) {
+    this.blockSize = Math.ceil(this.blockSize * factor);
     this.render();
   }
 
-  zoomOut() {
-    this.blockSize = Math.ceil(this.blockSize / 2);
+  zoomOut(factor = 2) {
+    this.blockSize = Math.ceil(this.blockSize / factor);
     this.render();
   }
 
@@ -311,6 +312,32 @@ class AppCanvas {
 
   getCanvasData() {
     return this.canvas.toDataURL();
+  }
+}
+
+export default class App {
+  constructor(mainElement) {
+    this.appCanvas = new AppCanvas();
+    mainElement.appendChild(this.appCanvas.canvas);
+    window.addEventListener('resize', this.appCanvas.resizeHandler);
+    // menuButtons.hideGrid.addEventListener('click', this.appCanvas.toggleGrid);
+    // menuButtons.zoomIn.addEventListener('click', this.appCanvas.zoomHandlers.in);
+    // menuButtons.zoomOut.addEventListener('click', this.appCanvas.zoomHandlers.out);
+    // menuButtons.colorPaletteEdit.addEventListener('click',
+    //     this.appCanvas.colorPaletteHandlers.edit);
+    // new
+    // save (to profile)
+    // load
+    // convert to image
+    // post to community
+    // post to social media
+    // go to my gallery
+    // go to community gallery
+    // report...
+  }
+
+  start() {
+    this.appCanvas.render();
   }
 }
 

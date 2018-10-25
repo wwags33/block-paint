@@ -1,57 +1,74 @@
 /** 
  * Copyright 2018 William Wager
+ *
+ *
+ * Theme colors: grey and nearly-white
+ * Primary: #bdbdbd;
+ * Primary-light: #efefef;
+ * Primary-dark: #8d8d8d;
+ * Secondary: #fafafa;
+ * Secondary-light: #ffffff;
+ * Secondary-dark: #c7c7c7;
  */
 
-#js_disabled_p {
-  text-align: center;
-}
 
-body{
+body {
   margin: 0px;
+  font-family: 'Share Tech Mono', monospace;
 }
 
-.header_footer_div {
-  background-color: rgba(200, 200, 200, 0.8);
-  height: 40px;
+.full-width {
   width: 100%;
+  min-width: 256px;
 }
 
-.header_footer_a {
-  font: sans-serif;
-  color: #1F1F1F;
-  padding: 10px;
-  font-size: 20px;
-  line-height: 20px;
+.bgc-primary-dark {
+  background-color: #8d8d8d;
+}
+
+.bgc-primary {
+  background-color: #bdbdbd;
+}
+
+.bgc-primary-light {
+  background-color: #efefef;
+}
+
+/* Material Icons (thx Google!) */
+.material-icons { vertical-align: top; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+.material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+
+/* Header styles */
+.bp-miniheader {
+  height: 10px;
+}
+
+.bp-header {
+  height: 24px;
+  box-shadow: 0 2px 8px #8d8d8d; /* primary-dark */
+  padding: 8px 0;
+  font-size: 24px;
+}
+
+.no-decor {
+  color: black;
   text-decoration: none;
 }
 
-#header_div {
-  box-shadow: 0 2px 8px #888888;
-}
-
-#header_logo {
+.float-left {
   float: left;
+  padding-left: 8px;
 }
 
-#header_menu {
+.float-right {
   float: right;
-  font-weight: bold;
+  padding-right: 8px;
 }
 
-#footer_div {
-  bottom: 0;
-  box-shadow: 0 -2px 8px #888888;
-  position: fixed;
-}
-
-#footer_copyright {
-  display: block;
+/* Main styles */
+.text-center {
   text-align: center;
-}
-
-canvas {
-  position: fixed;
-  top: 0;
-  background-color: dodgerblue;
-  z-index: -1;
 }

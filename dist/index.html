@@ -1,38 +1,43 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<!-- Copyright 2018 William Wager -->
+<html lang="en">
   <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Block Paint</title>
-    <meta charset="UTF-8" />
-    <meta name="description" content="Paint block by block." />
-    <meta name="keywords" content="HTML,CSS,JavaScript,Canvas">
-    <meta name="author" content="William Wager">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="icons/favicon.ico">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Share+Tech+Mono">
     <link rel="stylesheet" type="text/css" href="style/style.css">
-    <script src="./index.js"></script>
+    <!--<script src="./index.js"></script>-->
   </head>
   <body>
-    <header>
-      <div id="header_div" class="header_footer_div">
-        <!-- Logo will be replaced with image.
-        <img id="header_logo" src="images/logo.png" alt="Block Paint" height="50">-->
-        <a id="header_logo" class="header_footer_a" href="javascript:void(0);" title="Logo">Block Paint!</a>
-        <!-- Settings emblem will be replaced.
-        <img id="header_menu" src="images/settings_cog.png" alt="Settings" height="25">-->
-        <a id="header_menu" class="header_footer_a" href="javascript:void(0);" onclick="console.log('Open Settings...');" title="Settings">&#9788;</a>
-      </div>
+    <header class="bp-miniheader full-width bgc-primary-dark"></header>
+    <header class="bp-header full-width bgc-primary">
+        <a class="no-decor float-left" href="javascript:void(0);" title="Logo">
+          <i class="material-icons md-24 md-dark">border_all</i> Block Paint!
+        </a>
+        <a class="no-decor float-right" href="javascript:void(0);" title="Settings">
+          <i class="material-icons md-24 md-dark">settings</i>
+        </a>
     </header>
-    <main>
-      <div id="main_div">
-        <p id="js_disabled_p">JavaScript must be enabled to run this application.</p>
-      </div>
-      <script>
-      document.getElementById("js_disabled_p").innerHTML="Loading Block Paint...";
-      </script>
+    <main id="bp-main">
+      <noscript>
+        <br>
+        For full functionality of this site it is necessary to enable JavaScript.
+        Here are the <a href="https://www.enable-javascript.com/" target="_blank">
+        instructions how to enable JavaScript in your web browser</a>.
+      </noscript>
     </main>
+    <!--    
     <footer>
       <div id="footer_div" class="header_footer_div">
         <a id="footer_copyright" class="header_footer_a" href="javascript:void(0);" title="Copyright">William Wager &copy; 2018</a>
+        <div id="footer_weblink_div" class="popup-content">
+          <a href="http://williamwager.com">About the developer ↪</a>
+        </div>
       </div>
     </footer>
+    -->
   </body>
 </html>

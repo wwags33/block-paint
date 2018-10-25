@@ -21,7 +21,7 @@ import {
   Block,
   Grid,
   AppCanvas
-} from '../blockPaint';
+} from '../blockPaintApp';
 import ColorPalette from '../colorPalette';
 
 jest.mock('../colorPalette');
@@ -830,4 +830,14 @@ describe('AppCanvas save and load tests', () => {
     expect(appCanvas.getCanvasData()).toBe('mock data');
     expect(appCanvas.canvas.toDataURL).toBeCalled();
   });
+});
+
+describe('App class tests', () => {
+  // test('', () => {
+  //   const mockMenu = new SettingsMenu();
+  //   const mainElement = document.createElement('MAIN');
+  //   const bodyElement = document.getElementsByTag('BODY')[0];
+  //   bodyElement.appendChild(mainElement);
+  //   const app = new App(mainElement, mockMenu);
+  // });
 });

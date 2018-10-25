@@ -18,15 +18,12 @@
  */
 
 import 'airbnb-browser-shims';
-// import BlockPaint from './main/blockPaint';
+import App from './main/blockPaintApp';
 
 function main() {
-  // document.getElementById('main_div').remove();
-  // App.init();
-  // App.draw();
-  // window.addEventListener('resize', App.resize.bind(App));
-  // document.getElementById('header_menu').addEventListener('click', App.settings);
-  // document.getElementById('footer_copyright').addEventListener('click', App.website);
+  const mainElement = document.getElementById('bp-main');
+  const blockPaintApp = new App(mainElement);
+  blockPaintApp.start();
 }
 
-window.addEventListener('load', main);
+window.onload = main;
