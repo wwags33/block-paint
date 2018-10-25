@@ -72,3 +72,10 @@ body {
 .text-center {
   text-align: center;
 }
+
+canvas {
+  z-index: -1;
+  position: absolute;
+  top: 10px;
+  left: 0;
+}

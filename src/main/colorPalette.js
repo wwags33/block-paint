@@ -19,14 +19,14 @@
 
 export default class ColorPalette {
   constructor() {
-    throw Error('ColorPalette not implemented!');
+    this.colors = ['black'];
   }
 
   edit() {
     throw Error(`${this} not implemented!`);
   }
 
-  getColor() {
-    throw Error(`${this} not implemented!`);
+  getColor(index) {
+    return this.colors[index % (this.colors.length + 1)];
   }
 }

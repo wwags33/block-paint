@@ -22,8 +22,10 @@ import App from './main/blockPaintApp';
 
 function main() {
   const mainElement = document.getElementById('bp-main');
-  const blockPaintApp = new App(mainElement);
-  blockPaintApp.start();
+  if (mainElement) {
+    const blockPaintApp = new App(mainElement);
+    blockPaintApp.start();
+  }
 }
 
 window.onload = main;
